@@ -17,12 +17,7 @@ import {
   getLog,
   getLogEntry,
 } from "../../store/Log";
-import { DataSyncState, getDataSync } from "../../store/DataSync";
-import { getAuthenticated } from "../../store/Session";
 
-import { syncLogSheet, SyncLogSheetResponse } from "../../services/DataSync";
-
-import { Sidebar } from "../../components/Sidebar";
 import { Header } from "../../components/Header";
 import { FieldText } from "../../components/FieldText";
 import { FieldNumber } from "../../components/FieldNumber";
@@ -30,7 +25,6 @@ import { FieldDate } from "../../components/FieldDate";
 import { FieldBoolean } from "../../components/FieldBoolean";
 import { FieldSelect } from "../../components/FieldSelect";
 import { SetToast } from "../../components/Toaster";
-import { handleError, updateLocalLog } from "../../components/DataSync";
 
 // import { getTimestamp, notify } from "../../utils";
 import {
@@ -70,15 +64,11 @@ export interface OnLogEntrySubmitParams {
   values: { [fieldId: string]: FieldValue; label: string };
   log: Log;
   entry: LogEntryType;
-  authenticated?: boolean;
-  dataSyncState?: DataSyncState;
 }
 export const onLogEntrySubmit = async ({
   values,
   log,
   entry,
-  authenticated,
-  dataSyncState,
 }: OnLogEntrySubmitParams) => {
   const entryId: string = entry && entry.id ? entry.id : uuidv4();
   const newValues = {
@@ -98,26 +88,6 @@ export const onLogEntrySubmit = async ({
       entry: newEntry,
     })
   );
-  // sync log entries
-  if (authenticated && dataSyncState?.syncSettings) {
-    const sync = dataSyncState[dataSyncState.syncMethod];
-    if (sync?.logSheets && sync.logSheets[log.id]) {
-      const { onAddEntry, onEditEntry } = dataSyncState.syncSettings;
-      if (onAddEntry || onEditEntry) {
-        const newLog = getLog(store.getState(), log.id)
-        syncLogSheet({
-          log: newLog,
-          logSheetId: sync.logSheets[log.id].id,
-          onError: handleError,
-        }).then((updates: SyncLogSheetResponse) => {
-          updateLocalLog({ log: newLog, updates, store })
-        }).catch((error) => {
-          const syncMethod = entry ? 'onEditEntry' : 'onAddEntry';
-          console.error(`Error syncing ${syncMethod}: `, error);
-        });
-      }
-    }
-  }
 };
 
 
@@ -139,8 +109,6 @@ export const LogEntry: FC<LogEntryProps> = ({
   setToast,
 }): ReactElement | null => {
   const navigate = useNavigate();
-  const authenticated = getAuthenticated(store.getState());
-  const dataSyncState = getDataSync(store.getState());
 
   // Get log and entry from store
   const { id: logId, entry: entryId } = useParams() as {
@@ -153,7 +121,6 @@ export const LogEntry: FC<LogEntryProps> = ({
   const logFields: LogFields[] = Object.values(fields || {});
 
   // Page state
-  const [showSidebar, setShowSidebar] = React.useState(false);
   const [cancel, setCancel] = React.useState(false);
   const [isNewEntry] = React.useState(
     typeof entryId === "undefined" || typeof entry === "undefined"
@@ -201,7 +168,6 @@ export const LogEntry: FC<LogEntryProps> = ({
           <Col>
             <Header
               title={`${name}${ENTRY_HEADER}`}
-              toggleSidebar={setShowSidebar}
             />
             <hr />
           </Col>
@@ -220,7 +186,7 @@ export const LogEntry: FC<LogEntryProps> = ({
             //     tag: log.id,
             //   });
             // }
-            onLogEntrySubmit({ values, log, entry, authenticated, dataSyncState, });
+            onLogEntrySubmit({ values, log, entry, });
             setToast({
               show: true,
               name: log.name,
@@ -308,7 +274,6 @@ export const LogEntry: FC<LogEntryProps> = ({
             );
           }}
         </Formik>
-        <Sidebar showSidebar={showSidebar} toggleSidebar={setShowSidebar} />
       </Container>
     </>
   );

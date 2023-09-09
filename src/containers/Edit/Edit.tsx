@@ -13,22 +13,15 @@ import {
   REMOVE_LOG_ACTION,
   getLog,
 } from "../../store/Log";
-import { DataSyncState, removeGoogleDriveLogSheet, getDataSync } from "../../store/DataSync";
-
-import { syncLogSheet } from "../../services/DataSync";
-import { SyncLogSheetResponse } from "../../services/DataSync";
 
 import { LogNameForm } from "../../components/LogNameForm";
 import { EditFieldsTable } from "../../components/EditFieldsTable";
 import { EditFieldForm } from "../../components/EditFieldForm";
 import { EditLabelForm } from "../../components/EditLabelForm";
-import { Sidebar } from "../../components/Sidebar";
 import { Header } from "../../components/Header";
 
 import { SetToast } from "../../components/Toaster";
 import { EditSortForm } from "../../components/EditSortForm";
-import { handleError, updateLocalLog } from "../../components/DataSync";
-// import { EditRecurrenceForm } from "../../components/EditRecurrenceForm";
 
 import "./Edit.scss";
 
@@ -53,7 +46,6 @@ import {
   SUBMIT,
   VIEW_LOG,
 } from "../../strings";
-import { getAuthenticated } from "../../store/Session";
 
 export const EDIT_HEADER = "Edit: ";
 export const LOG_FIELDS = "Log Fields";
@@ -66,8 +58,6 @@ export const FIELD_SETTINGS = "Field Settings";
 export interface OnUpdateLogParams {
   log: Log;
   values: any;
-  authenticated?: boolean;
-  dataSyncState?: DataSyncState;
 }
 
 /**
@@ -80,35 +70,12 @@ export interface OnUpdateLogParams {
 export const onUpdateLog = async ({
   log,
   values,
-  authenticated,
-  dataSyncState,
 }: OnUpdateLogParams): Promise<void> => {
   const updatedLog: Log = {
     ...log,
     ...values,
   };
   await store.dispatch(updateLog({ logId: log.id, log: updatedLog }));
-  if (authenticated && dataSyncState?.syncEnabled) {
-    const { syncSettings } = dataSyncState;
-    if (syncSettings?.onEditLog) {
-      const sync = dataSyncState[dataSyncState.syncMethod];
-      if (sync?.logSheets && sync?.logSheets[log.id]) {
-        const newLog = getLog(store.getState(), log.id)
-        // todo: only sync log metadata on update log
-        syncLogSheet({
-          log: newLog,
-          logSheetId: sync.logSheets[log.id].id,
-          onError: handleError,
-        })
-          .then((updates: SyncLogSheetResponse) =>
-            updateLocalLog({ log, updates, store })
-          )
-          .catch((error) => {
-            console.error("Error syncing onUpdateLog: ", error);
-          });
-      }
-    }
-  }
 };
 
 /**
@@ -119,40 +86,17 @@ export const onUpdateLog = async ({
 export const onDeleteLog = (log: Log) => {
   // todo: remove log from data sync state
   store.dispatch(removeLog({ logId: log.id }));
-  store.dispatch(removeGoogleDriveLogSheet(log.id));
 };
 
 export interface onDeleteFieldParams {
   log: Log;
   fieldId: string;
-  authenticated?: boolean;
-  dataSyncState?: DataSyncState;
 }
 export const onDeleteField = async ({
   log,
   fieldId,
-  authenticated,
-  dataSyncState,
 }:onDeleteFieldParams) => {
   await store.dispatch(removeLogField({ logId: log.id, fieldId }));
-  if (authenticated && dataSyncState?.syncEnabled) {
-    const { syncSettings } = dataSyncState;
-    if (syncSettings?.onEditLog) {
-      const sync = dataSyncState[dataSyncState.syncMethod];
-      if (sync?.logSheets && sync?.logSheets[log.id]) {
-        const newLog = getLog(store.getState(), log.id)
-        syncLogSheet({
-          log: newLog,
-          logSheetId: sync.logSheets[log.id].id,
-          onError: handleError,
-        }).then((updates: SyncLogSheetResponse) => {
-          updateLocalLog({ log, updates, store });
-        }).catch((error) => {
-          console.error("Error syncing onDeleteField: ", error);
-        });
-      }
-    }
-  }
 };
 
 /**
@@ -167,8 +111,6 @@ export interface EditProps {
 
 export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
   const navigate = useNavigate();
-  const authenticated = getAuthenticated(store.getState());
-  const dataSyncState = getDataSync(store.getState());
 
   // Get Log and Field ids from URL
   const { id, field: fid } = useParams() as { id: string; field: string };
@@ -181,12 +123,8 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
     navigate(HOME_URL);
   }
 
-  // React.useEffect(() => {
-  //   // todo: sync log metadata; sync log fields
-  // }, []);
 
   // Modal and Sidebar states
-  const [showSidebar, setShowSidebar] = React.useState(false);
   const [showModal, setShowModal] = React.useState(fid ? true : false);
   const [modalMode, setModalMode] = React.useState(
     fid && fid !== NEW ? EDIT : ADD
@@ -232,7 +170,6 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
           <Col>
             <Header
               title={EDIT_HEADER + log.name}
-              toggleSidebar={setShowSidebar}
             />
           </Col>
         </Row>
@@ -255,7 +192,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
                   onDeleteClick={(
                     e: React.MouseEvent<HTMLElement, MouseEvent>,
                     fieldId: string
-                  ) => onDeleteField({ log, fieldId, authenticated, dataSyncState })}
+                  ) => onDeleteField({ log, fieldId })}
                   onEditClick={onEditField}
                   setToast={setToast}
                 />
@@ -358,8 +295,6 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
           />
         </Modal.Body>
       </Modal>
-
-      <Sidebar showSidebar={showSidebar} toggleSidebar={setShowSidebar} />
     </>
   );
 };

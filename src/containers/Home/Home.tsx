@@ -19,9 +19,7 @@ import {
 } from "../../store/Log";
 import { v4 as uuidv4 } from "uuid";
 
-import { Sidebar } from "../../components/Sidebar";
 import { Header } from "../../components/Header";
-import { CsvModal } from "../../components/CsvModal";
 
 import store from "../../store/store";
 import { addLog } from "../../store/Log";
@@ -30,7 +28,6 @@ import {
   CANCEL,
   CHECKBOX,
   CREATED_AT,
-  CSV,
   DOT_CSV,
   EMPTY,
   FILE,
@@ -42,17 +39,12 @@ import {
   PRIMARY,
   SAVE,
   SECONDARY,
-  SYNC_LOG,
   TEXT,
   TEXT_DANGER,
   UPDATED_AT,
 } from "../../strings";
 import { SetToast } from "../../components/Toaster";
 import { parseCSV } from "../../utils";
-import { getAuthenticated } from "../../store/Session";
-import { addGoogleDriveLogSheet, DataSyncState, getLogSheets, LogSheet, getDataSync } from "../../store/DataSync";
-import { initNewLogSheet, setLogSheetIds } from "../../services/DataSync";
-import { handleError } from "../../components/DataSync";
 
 export const TRACKER_KEEPER = "Tracker Keeper";
 export const YOUR_LOGS = "Your Logs";
@@ -71,16 +63,10 @@ export const LOG_FIELDS = "Log Fields";
 export interface onAddLogParams {
   id: string;
   name: string;
-  syncLog: boolean;
-  authenticated?: boolean;
-  dataSyncState?: DataSyncState;
 }
 export const onAddLog = async ({
     id,
     name,
-    syncLog,
-    authenticated,
-    dataSyncState,
 }: onAddLogParams) => {
   const log = {
     ...initialLogState,
@@ -88,30 +74,6 @@ export const onAddLog = async ({
     id,
   };
   store.dispatch(addLog({ log }));
-
-  if (syncLog && authenticated && dataSyncState?.syncEnabled && dataSyncState?.syncSettings?.onAddNewLog) {
-    const sync = dataSyncState[dataSyncState.syncMethod];
-    if (sync?.folderId) {
-      const sheet = await initNewLogSheet({
-        onError: handleError,
-        syncId: dataSyncState.syncId,
-        log,
-        folderId: sync.folderId,
-      });
-      await store.dispatch(addGoogleDriveLogSheet({
-        [id]: {
-          ...sheet,
-          name,
-        } as LogSheet,
-      }));
-      const logSheetIds = getLogSheets(store.getState());
-      setLogSheetIds({
-        onError: handleError,
-        logSheetId: sync.logSheetId,
-        logSheetIds,
-      });
-    }
-  }
 };
 
 export interface HomeProps {
@@ -120,20 +82,16 @@ export interface HomeProps {
 
 export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
   const navigate = useNavigate();
-  const authenticated = getAuthenticated(store.getState())
-  const dataSyncState = getDataSync(store.getState());
 
   const isNewLogModalOpen = window.location.hash === "#/new";
-  const [showSidebar, setShowSidebar] = React.useState(false);
   const [showModal, setShowModal] = React.useState(isNewLogModalOpen);
-  const [showExportModal, setShowExportModal] = React.useState(false);
-  const [exportID, setExportID] = React.useState("");
+  // const [showExportModal, setShowExportModal] = React.useState(false);
+  // const [exportID, setExportID] = React.useState("");
   const [restoreLog, setRestoreLog] = React.useState(false);
   const [restoredFields, setRestoredFields] = React.useState([]);
   const [restoredEntries, setRestoredEntries] = React.useState([]);
   const [newLogId, setNewLogId] = React.useState(EMPTY);
   const [newLogName, setNewLogName] = React.useState(EMPTY);
-  const [syncLog, setSyncLog] = React.useState(false);
   const logs = getLogsArray(store.getState());
 
   if (
@@ -148,7 +106,7 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
     <Container>
       <Row className="header__row">
         <Col>
-          <Header title={TRACKER_KEEPER} toggleSidebar={setShowSidebar} />
+          <Header title={TRACKER_KEEPER} />
         </Col>
       </Row>
       <Row>
@@ -199,14 +157,6 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
                             {EDIT}
                           </Dropdown.Item>
                           <Dropdown.Item
-                            onClick={() => {
-                              setExportID(log.id);
-                              setShowExportModal(true);
-                            }}
-                          >
-                            {CSV}
-                          </Dropdown.Item>
-                          <Dropdown.Item
                             className={TEXT_DANGER}
                             onClick={(e) => {
                               e.preventDefault();
@@ -242,15 +192,6 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
         </Col>
       </Row>
 
-      <CsvModal
-        logID={exportID}
-        onHide={() => {
-          setShowExportModal(false);
-        }}
-        show={showExportModal}
-        setToast={setToast}
-      />
-
       {/* todo: extract to component */}
       <Modal
         id="addLogModal"
@@ -285,16 +226,6 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
                 onChange={(e) => setRestoreLog(e.target.checked)}
               />
             </Form.Group>
-            {dataSyncState.syncEnabled && dataSyncState.syncSettings.onAddEntry && (
-              <Form.Group controlId="syncLog">
-                <Form.Check
-                  disabled={!authenticated}
-                  type={CHECKBOX}
-                  label={SYNC_LOG}
-                  onChange={(e) => setSyncLog(e.target.checked)}
-                />
-              </Form.Group>
-            )}
             {restoreLog && (
               <>
                 <Form.Group controlId="formFieldData">
@@ -404,9 +335,6 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
                     await onAddLog({
                       id: newId,
                       name: newLogName,
-                      syncLog,
-                      authenticated,
-                      dataSyncState,
                     });
                     setNewLogId(newId);
                     if (restoreLog) {
@@ -451,7 +379,6 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
         </Modal.Footer>
       </Modal>
 
-      <Sidebar showSidebar={showSidebar} toggleSidebar={setShowSidebar} />
     </Container>
   );
 };

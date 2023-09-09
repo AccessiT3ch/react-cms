@@ -10,7 +10,6 @@ import {
 } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { Sidebar } from "../../components/Sidebar";
 import { Header } from "../../components/Header";
 
 import store from "../../store/store";
@@ -50,10 +49,6 @@ import {
 } from "../../strings";
 import { SetToast } from "../../components/Toaster";
 import { entryFilter, LogEntryFilter } from "../../components/LogEntryFilter";
-import { syncLogSheet, SyncLogSheetResponse } from "../../services/DataSync";
-import { DataSyncState, getDataSync } from "../../store/DataSync";
-import { handleError, updateLocalLog } from "../../components/DataSync";
-import { getAuthenticated } from "../../store/Session";
 
 // Display strings
 export const ENTRIES_HEADER = "Entries ";
@@ -65,34 +60,13 @@ export const REVERSED = "Reversed";
 export interface onDeleteEntryParams {
   log: LogType;
   entryId: string;
-  authenticated?: boolean;
-  dataSyncState?: DataSyncState;
 }
 
 export const onDeleteEntry = async ({
   log, 
   entryId,
-  authenticated,
-  dataSyncState,
 }: onDeleteEntryParams) => {
   await store.dispatch(removeLogEntry({ logId: log.id, entryId }));
-
-  if (authenticated && dataSyncState?.syncSettings) {
-    const sync = dataSyncState[dataSyncState.syncMethod];
-    if (sync?.logSheets && sync.logSheets[log.id] && dataSyncState.syncSettings.onEditEntry) {
-      const state = store.getState();
-      const newLog = getLog(state, log.id);
-      syncLogSheet({
-        log: newLog,
-        logSheetId: sync.logSheets[log.id].id,
-        onError: handleError,
-      }).then((updates: SyncLogSheetResponse) => {
-        updateLocalLog({ log: newLog, updates, store });
-      }).catch((error) => {
-        console.error(`Error syncing onEntryDelete: ${error}`)
-      });
-    }
-  }
 };
 
 /**
@@ -106,8 +80,6 @@ export interface LogProps {
 
 export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
   const navigate = useNavigate();
-  const authenticated = getAuthenticated(store.getState());
-  const dataSyncState = getDataSync(store.getState());
 
   // Get log from store
   const { id } = useParams() as { id: string };
@@ -118,7 +90,6 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
   const [sortBy, setSortBy] = React.useState(sort || CREATED_AT);
   const [sortOrder, setSortOrder] = React.useState(order || SORT_DESC);
   const [filter, setFilter] = React.useState([] as any);
-  const [showSidebar, setShowSidebar] = React.useState(false);
 
   // Define entries
   const entries: LogEntry[] = log
@@ -152,7 +123,7 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
     <Container className="log__container">
       <Row>
         <Col>
-          <Header title={name} toggleSidebar={setShowSidebar} />
+          <Header title={name} />
         </Col>
       </Row>
       <hr />
@@ -308,8 +279,6 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
                             onDeleteEntry({
                               log,
                               entryId: entry.id,
-                              authenticated,
-                              dataSyncState,
                             });
                             setToast({
                               show: true,
@@ -362,8 +331,6 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
           </Button>
         </Col>
       </Row>
-
-      <Sidebar showSidebar={showSidebar} toggleSidebar={setShowSidebar} />
     </Container>
   );
 };

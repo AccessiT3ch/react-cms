@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useEffect } from "react";
+import React, { FC, ReactElement } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { Home } from "../containers/Home";
 import { Edit } from "../containers/Edit";
@@ -7,45 +7,8 @@ import { LogEntry } from "../containers/LogEntry";
 import "./App.scss";
 import { EDIT_URL, EMPTY, ENTRY_EDIT_URL, ENTRY_URL, FIELD_URL, HOME_URL, LOG_ID_URL, LOG_URL, NEW_URL, SUCCESS, WILDCARD } from "../strings";
 import { Toaster, ToastType } from "../components/Toaster";
-import { deauthenticate, useSession } from "../store/Session/reducer";
-import store from "../store/store";
-import { authenticateUser, deauthenticateUser, initGoogleAuth, setLogoutTimer } from "../services/GoogleApi";
-import { decode } from "../utils";
 
 export const App: FC = (): ReactElement => {
-  const apiKey = process.env.REACT_APP_EG_API_KEY as string;
-  const clientId = process.env.REACT_APP_EG_CLIENT_ID as string;
-  const session = useSession();
-  const { authenticated, expiresAt, data } = session;
-
-  const handleLogout = (): void => {
-    deauthenticateUser(() => {
-      store.dispatch(deauthenticate(''));
-    })
-  };
-
-  useEffect(() => {
-    initGoogleAuth({
-      apiKey,
-      clientId,
-      decrypt: (str:string) => decode(str, 2)
-    }, () => {
-      if (authenticated) {
-        if (expiresAt && expiresAt < Date.now()) {
-          handleLogout();
-        } else {
-          authenticateUser(() => {
-            setLogoutTimer({
-              logoutCallback: handleLogout,
-              timeout: expiresAt - Date.now(),
-              // autoRefresh,
-              sessionData: data,
-            });
-          }, data.access_token && data);
-        }
-      }
-    });
-  }, []);
 
   const [toast, setToast] = React.useState({
     show: false,

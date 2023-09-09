@@ -14,9 +14,7 @@ import {
   LogFields,
   ADD_LOG_FIELD_ACTION,
   UPDATE_LOG_FIELD_ACTION,
-  getLog,
 } from "../../store/Log";
-import { getAuthenticated } from "../../store/Session";
 
 import { EditFieldText } from "./EditFieldText";
 import { EditFieldNumber } from "./EditFieldNumber";
@@ -25,9 +23,6 @@ import { EditFieldSelect } from "./EditFieldSelect";
 import { EditFieldBoolean } from "./EditFieldBoolean";
 
 import { SetToast } from "../Toaster";
-import { DataSyncState, getDataSync } from "../../store/DataSync";
-import { syncLogSheet, SyncLogSheetResponse } from "../../services/DataSync";
-import { handleError, updateLocalLog } from "../DataSync";
 
 import "./editFieldForm.scss";
 
@@ -73,15 +68,11 @@ export interface HandleFieldsParams {
   values: { [key: string]: string };
   log: Log;
   field: LogFields;
-  authenticated?: boolean;
-  dataSyncState?: DataSyncState;
 }
 export const onHandleField = async ({
   values,
   log,
   field,
-  authenticated,
-  dataSyncState,
 }: HandleFieldsParams) => {
   const { id, type } = values;
   const prevField = {
@@ -103,25 +94,6 @@ export const onHandleField = async ({
   } else {
     store.dispatch(addLogField({ logId: log.id, field: newField }));
   }
-
-  if (authenticated && dataSyncState?.syncEnabled) {
-    const sync = dataSyncState[dataSyncState.syncMethod];
-    if (sync?.logSheets && sync?.logSheets[log.id]) {
-      const { syncSettings } = dataSyncState;
-      if (syncSettings?.onAddField || syncSettings?.onEditField) {
-        const newLog = getLog(store.getState(), log.id);
-        syncLogSheet({
-          log: newLog,
-          logSheetId: sync.logSheets[log.id].id,
-          onError: handleError,
-        }).then((updates: SyncLogSheetResponse) => {
-          updateLocalLog({ log: newLog, updates, store });
-        }).catch((error) => {
-          console.error("Error syncing onEditField: ", error);
-        });
-      }
-    }
-  }
 };
 
 export interface EditFieldFormProps {
@@ -142,8 +114,6 @@ export const EditFieldForm: FC<EditFieldFormProps> = ({
   resetModal,
   setToast,
 }): ReactElement => {
-  const authenticated = getAuthenticated(store.getState());
-  const dataSyncState = getDataSync(store.getState());
   const fieldState: EditFieldFormValues = fieldId
     ? log.fields[fieldId]
     : { ...initialTextFieldState, name: EMPTY };
@@ -166,8 +136,6 @@ export const EditFieldForm: FC<EditFieldFormProps> = ({
           values,
           log,
           field: fieldState as LogFields,
-          authenticated,
-          dataSyncState,
         });
         setToast({
           show: true,

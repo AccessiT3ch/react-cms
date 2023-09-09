@@ -1,9 +1,6 @@
 import React from "react";
 import { FC, ReactElement } from "react";
-import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { OUTLINE_SECONDARY, ABOUT_APP_HEADER } from "../../strings";
-import { ToggleSidebar } from "../Sidebar";
 import "./header.scss";
 
 /**
@@ -15,12 +12,10 @@ import "./header.scss";
 
 export interface HeaderProps {
   title: string;
-  toggleSidebar: ToggleSidebar;
 }
 
 export const Header: FC<HeaderProps> = ({
   title,
-  toggleSidebar,
 }): ReactElement => {
   const navigate = useNavigate();
   return (
@@ -40,14 +35,6 @@ export const Header: FC<HeaderProps> = ({
         />
       </a>
       <h1>{title}</h1>
-      <Button
-        className="sidebar__button_toggle"
-        variant={OUTLINE_SECONDARY}
-        onClick={() => toggleSidebar(true)}
-        title={ABOUT_APP_HEADER}
-      >
-        <i className="fa fa-bars fa-lg" aria-hidden="true"></i>
-      </Button>
     </header>
   );
 };

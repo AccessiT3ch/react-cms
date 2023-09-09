@@ -1,9 +1,8 @@
 {
-  "name": "@accessitech/tracker",
+  "name": "react-cms",
   "version": "0.4.1",
   "private": true,
   "author": "AccessiTech LLC <accessiT3ch@gmail.com>",
-  "homepage": "https://accessitech.github.io/tracker/",
   "license": "MIT",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.2",
