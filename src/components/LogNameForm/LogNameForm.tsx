@@ -5,7 +5,7 @@ import { Form, Button, InputGroup } from "react-bootstrap";
 
 import { Log } from "../../store/Log";
 
-import { OnUpdateLogParams } from "../../containers/Edit";
+import { OnUpdateLogParams } from "../../pages/Edit"; // todo - move into slice
 
 import { EMPTY, PRIMARY, SAVE, SUBMIT, TEXT, TEXT_DANGER } from "../../strings";
 

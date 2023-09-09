@@ -1,9 +1,9 @@
 import React, { FC, ReactElement } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
-import { Home } from "../containers/Home";
-import { Edit } from "../containers/Edit";
-import { Log } from "../containers/Log";
-import { LogEntry } from "../containers/LogEntry";
+import { Home } from "../pages/Home";
+import { Edit } from "../pages/Edit";
+import { Log } from "../pages/Log";
+import { LogEntry } from "../pages/LogEntry";
 import "./App.scss";
 import { EDIT_URL, EMPTY, ENTRY_EDIT_URL, ENTRY_URL, FIELD_URL, HOME_URL, LOG_ID_URL, LOG_URL, NEW_URL, SUCCESS, WILDCARD } from "../strings";
 import { Toaster, ToastType } from "../components/Toaster";

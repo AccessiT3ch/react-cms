@@ -2,7 +2,7 @@ import React, { FC, ReactElement } from "react";
 import { Formik } from "formik";
 import { InputGroup, Form, Button } from "react-bootstrap";
 import { Log, LogFields } from "../../store/Log";
-import { OnUpdateLogParams } from "../../containers/Edit";
+import { OnUpdateLogParams } from "../../pages/Edit"; // todo - move into slice
 
 import {
   DATE,

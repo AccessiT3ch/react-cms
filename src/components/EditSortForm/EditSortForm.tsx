@@ -4,7 +4,7 @@ import { InputGroup, Form, Button, Row, Col } from "react-bootstrap";
 
 import { Log, LogFields } from "../../store/Log";
 
-import { OnUpdateLogParams } from "../../containers/Edit";
+import { OnUpdateLogParams } from "../../pages/Edit"; // todo - move into slice
 
 import {
   CREATED_AT,
