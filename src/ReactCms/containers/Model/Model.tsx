@@ -20,7 +20,7 @@ import {
   REMOVE_LOG_ENTRY_ACTION,
   getLog,
 } from "../../../store/Log";
-import "./log.scss";
+import "./Model.scss";
 import {
   ACTIONS,
   ADD_ENTRY,

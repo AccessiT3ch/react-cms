@@ -45,7 +45,7 @@ import {
   TEXT,
   WARNING,
 } from "../../../strings";
-import "./logEntry.scss";
+import "./Entry.scss";
 
 // Magic strings
 export const LABEL = "label";
