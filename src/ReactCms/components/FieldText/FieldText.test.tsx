@@ -19,8 +19,8 @@ test("renders without crashing", () => {
 });
 
 test("renders the field label", () => {
-  const { getByText } = render(<FieldText {...formikProps} field={field} />);
-  expect(getByText(field.name)).toBeInTheDocument();
+  const { getAllByText } = render(<FieldText {...formikProps} field={field} />);
+  expect(getAllByText(field.name).length).not.toBe(0);
 });
 
 test("renders the required asterisk", () => {
