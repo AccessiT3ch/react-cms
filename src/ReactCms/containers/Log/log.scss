@@ -1,0 +1,54 @@
+@import '../../styles.scss';
+
+.log__container {
+  align-items: flex-start;
+
+  .log__entry {
+    margin-bottom: $spacer;
+
+    .log__entry__actions {
+      position: absolute;
+      top: $spacer;
+      right: $spacer;
+    }
+  }
+}
+
+.log__entries_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: $spacer;
+
+  &__actions {
+    display: flex;
+    align-items: flex-start;
+    gap: $spacer;
+    position: relative;
+
+    .log__entry_filter {
+      position: absolute;
+      background-color: white;
+      z-index: 5;
+      padding: $spacer;
+      transform: translate(0, 40px);
+      right: 0;
+      width: 25vw;
+
+      &__form {
+        display: flex;
+        flex-direction: column;
+        gap: $spacer;
+      }
+
+      &__reset_submit {
+        display: flex;
+        gap: $spacer;
+
+        & > button {
+          flex-basis: 50%;
+        }
+      }
+    }
+  }
+}
