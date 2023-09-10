@@ -20,7 +20,7 @@ import { EditFieldForm } from "../../components/EditField";
 import { EditLabelForm } from "../../components/EditLabelForm";
 import { Header } from "../../../App/components/Header";
 
-import { SetToast } from "../../../App/components/Toaster";
+import { SetToast } from "../../components/Toaster";
 import { EditSortForm } from "../../components/EditSortForm";
 
 import "./Edit.scss";

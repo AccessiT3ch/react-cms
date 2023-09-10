@@ -22,7 +22,7 @@ import { EditFieldDate } from "./EditFieldDate";
 import { EditFieldSelect } from "./EditFieldSelect";
 import { EditFieldBoolean } from "./EditFieldBoolean";
 
-import { SetToast } from "../../../App/components/Toaster";
+import { SetToast } from "../Toaster";
 
 import "./editField.scss";
 

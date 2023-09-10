@@ -47,7 +47,7 @@ import {
   TEXT,
   WARNING,
 } from "../../../strings";
-import { SetToast } from "../../../App/components/Toaster";
+import { SetToast } from "../../components/Toaster";
 import { entryFilter, LogEntryFilter } from "../../components/EntryFilter";
 
 // Display strings

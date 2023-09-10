@@ -43,7 +43,7 @@ import {
   TEXT_DANGER,
   UPDATED_AT,
 } from "../../../strings";
-import { SetToast } from "../../../App/components/Toaster";
+import { SetToast } from "../../components/Toaster";
 import { parseCSV } from "../../../utils";
 
 export const TRACKER_KEEPER = "Tracker Keeper";

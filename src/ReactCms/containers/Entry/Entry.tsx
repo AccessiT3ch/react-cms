@@ -24,7 +24,7 @@ import { FieldNumber } from "../../components/FieldNumber";
 import { FieldDate } from "../../components/FieldDate";
 import { FieldBoolean } from "../../components/FieldBoolean";
 import { FieldSelect } from "../../components/FieldSelect";
-import { SetToast } from "../../../App/components/Toaster";
+import { SetToast } from "../../components/Toaster";
 
 // import { getTimestamp, notify } from "../../utils";
 import {

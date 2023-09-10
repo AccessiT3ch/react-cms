@@ -6,7 +6,7 @@ import { Log } from "../ReactCms/containers/Model";
 import { LogEntry } from "../ReactCms/containers/Entry";
 import "./App.scss";
 import { EDIT_URL, EMPTY, ENTRY_EDIT_URL, ENTRY_URL, FIELD_URL, HOME_URL, LOG_ID_URL, LOG_URL, NEW_URL, SUCCESS, WILDCARD } from "../strings";
-import { Toaster, ToastType } from "./components/Toaster";
+import { Toaster, ToastType } from "../ReactCms/components/Toaster";
 
 export const App: FC = (): ReactElement => {
 

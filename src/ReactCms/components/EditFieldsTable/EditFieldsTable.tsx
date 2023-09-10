@@ -14,7 +14,7 @@ import {
   TYPE_LABEL,
   TYPE_OPTION_LABEL,
 } from "../../../strings";
-import { SetToast } from "../../../App/components/Toaster";
+import { SetToast } from "../Toaster";
 
 export const YES = "Yes";
 export const NO = "No";
