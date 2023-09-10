@@ -1,2 +1,1 @@
-import LogNameForm from "./ModelNameForm";
-export { LogNameForm };
+export { ModelNameForm } from "./ModelNameForm";

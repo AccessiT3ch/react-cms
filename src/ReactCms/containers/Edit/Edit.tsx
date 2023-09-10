@@ -7,7 +7,7 @@ import store from "../../../store/store";
 import { Model, Field } from "../../settings";
 import { getModel, updateModel, removeModel, removeField } from "../../reducer";
 
-import { LogNameForm } from "../../components/ModelNameForm";
+import { ModelNameForm } from "../../components/ModelNameForm";
 import { EditFieldsTable } from "../../components/EditFieldsTable";
 import { EditFieldForm } from "../../components/EditField";
 import { EditLabelForm } from "../../components/EditLabelForm";
@@ -191,7 +191,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
               <h2>{LOG_SETTINGS}</h2>
             </Accordion.Header>
             <Accordion.Body>
-              <LogNameForm onSubmit={onUpdateModel} model={model} />
+              <ModelNameForm onSubmit={onUpdateModel} model={model} />
               <EditSortForm model={model} onSubmit={onUpdateModel} />
               {/* todo: Introduce Entry Settings subsection when there are multiple settings
               <hr className="edit__settings_hr" />
