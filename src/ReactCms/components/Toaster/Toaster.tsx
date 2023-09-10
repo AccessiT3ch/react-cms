@@ -1,8 +1,30 @@
 import React, { FC, ReactElement } from "react";
 import { Toast, ToastContainer } from "react-bootstrap";
 import { EMPTY, SUCCESS } from "../../../strings";
-import { ToastType, toasts } from "./helpers";
 import "./toaster.scss";
+
+export type ToastTypes =
+  | "success"
+  | "danger"
+  | "warning"
+  | "info"
+  | "default"
+  | "primary"
+  | "secondary"
+  | "light"
+  | "dark";
+
+export interface ToastType {
+  content?: string;
+  context?: string;
+  status?: ToastTypes;
+  name?: string;
+  show?: boolean;
+}
+
+export interface Toasts {
+  [context: string]: ToastType;
+}
 
 export type SetToast = React.Dispatch<React.SetStateAction<ToastType>>;
 
@@ -16,11 +38,8 @@ export const Toaster: FC<ToasterProps> = ({
   setToast,
 }): ReactElement => {
   const { show, context, name, status, content } = toast;
-  const hasContext =
-    typeof context !== "undefined" && typeof toasts[context] !== "undefined";
-  const toastStatus: string =
-    (hasContext && toasts[context].status) || status || SUCCESS;
-  const toastBody = hasContext ? toasts[context].content : content || context;
+  const toastStatus: string = status || SUCCESS;
+  const toastBody = content || context;
 
   return !toastBody ? (<></>) : (
     <ToastContainer>

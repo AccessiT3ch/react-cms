@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { Toaster, ToasterProps } from "./Toaster";
-import { toasts } from "./helpers";
+
 
 test("renders without crashing", () => {
   const props: ToasterProps = {
@@ -52,18 +52,6 @@ test("renders toast with malformed status", () => {
   const element = getByRole("alert");
   expect(element).toBeInTheDocument();
   expect(element).toHaveClass("bg-asdfadsf");
-});
-
-test("renders toasts from contexts", () => {
-  const props: ToasterProps = {
-    toast: {},
-    setToast: jest.fn(),
-  };
-  Object.values(toasts).forEach((toast) => {
-    props.toast = toast;
-    const { getByText } = render(<Toaster {...props} />);
-    expect(getByText(toast.content as string)).toBeInTheDocument();
-  });
 });
 
 test("renders the close button", () => {

@@ -1,6 +1,6 @@
 import React, { FC, ReactElement } from "react";
 import { Dropdown } from "react-bootstrap"
-import { initialFieldStates, LogFields, REMOVE_LOG_FIELD_ACTION } from "../../../store/Log";
+import { getNewFieldState, Field } from "../../settings";
 import {
   ACTIONS,
   DELETE,
@@ -20,14 +20,14 @@ export const YES = "Yes";
 export const NO = "No";
 
 interface EditFieldClickFunction {
-  (e: React.MouseEvent<HTMLElement, MouseEvent>, field: LogFields): void;
+  (e: React.MouseEvent<HTMLElement, MouseEvent>, field: Field): void;
 }
 interface DeleteFieldClickFunction {
   (e: React.MouseEvent<HTMLElement, MouseEvent>, fieldId: string): void;
 }
 
 export interface EditFieldsTableProps {
-  fields: LogFields[];
+  fields: Field[];
   onEditClick: EditFieldClickFunction;
   onDeleteClick: DeleteFieldClickFunction;
   setToast: SetToast;
@@ -53,12 +53,12 @@ export const EditFieldsTable: FC<EditFieldsTableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {fields.map((field: LogFields) => (
+        {fields.map((field: Field) => (
           <tr key={field.id} style={{ verticalAlign: MIDDLE }}>
             <td>{field.name}</td>
             <td>{field.type}</td>
             <td>
-              {initialFieldStates[field.type].typeOptions ? field.option : ""}
+              {(getNewFieldState(field.type)).typeOptions ? field.option : ""}
             </td>
             <td>{field.required ? YES : NO}</td>
             <td>
@@ -86,7 +86,7 @@ export const EditFieldsTable: FC<EditFieldsTableProps> = ({
                       onDeleteClick(e, field.id);
                       setToast({
                         show: true,
-                        context: REMOVE_LOG_FIELD_ACTION,
+                        content: `Field deleted.`,
                         name: field.name,
                       });
                     }}

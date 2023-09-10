@@ -2,14 +2,14 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { FieldSelect } from "./FieldSelect";
-import { initialSelectFieldState, SelectLogField } from "../../../store/Log";
+import { initialFieldSelectState, FieldSelectType } from "../../settings";
 import { mockFormikProps } from "../../../testUtils";
 
 const field = {
-  ...initialSelectFieldState,
+  ...initialFieldSelectState,
   options: "one,two,three",
   id: "test",
-} as SelectLogField;
+} as FieldSelectType;
 
 const formikProps = {
   ...mockFormikProps,

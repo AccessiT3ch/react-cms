@@ -16,7 +16,7 @@ import {
 } from "reduxjs-toolkit-persist";
 import storage from "reduxjs-toolkit-persist/lib/storage";
 import { PersistConfig, Persistor } from "reduxjs-toolkit-persist/lib/types";
-import { logSlice, logSliceName } from "./Log";
+import { modelSlice, modelSliceName } from "../ReactCms/reducer";
 
 const persistConfig: PersistConfig<any> = {
   key: "@accessitech/react-cms",
@@ -24,7 +24,7 @@ const persistConfig: PersistConfig<any> = {
 };
 
 const reducers: Reducer<CombinedState<any>> = combineReducers({
-  [logSliceName]: logSlice.reducer,
+  [modelSliceName]: modelSlice.reducer,
 });
 
 const persistedReducer: Reducer = persistReducer(persistConfig, reducers);

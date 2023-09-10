@@ -2,13 +2,13 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { FieldDate } from "./FieldDate";
-import { initialDateFieldState, DateLogField } from "../../../store/Log";
+import { initialFieldDateState, FieldDateType } from "../../settings";
 import { mockFormikProps } from "../../../testUtils";
 
 const field = {
-  ...initialDateFieldState,
+  ...initialFieldDateState,
   id: "test",
-} as DateLogField;
+} as FieldDateType;
 const formikProps = {
   ...mockFormikProps,
   values: { [field.id]: "2020-01-01" },

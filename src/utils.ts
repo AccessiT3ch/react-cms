@@ -1,5 +1,4 @@
-import { Log } from "./store/Log";
-import { LogRecurrence } from "./store/Log/initialStates";
+import { Model } from "./ReactCms/settings";
 import { GRANTED } from "./strings";
 
 /**
@@ -27,14 +26,8 @@ export interface logEntriesToCSVOptions {
   useIdsAsHeaders?: boolean;
 }
 
-/**
- * Convert Log Entries to CSV
- * @param {Log} logEntries - The log entries to convert
- * @param {object} options - The options to use
- * @returns {string} The CSV string
- */
 export const logEntriesToCSV = (
-  log: Log,
+  model: Model,
   options: logEntriesToCSVOptions = {
     includeID: false,
     includeCreatedAt: false,
@@ -49,13 +42,13 @@ export const logEntriesToCSV = (
   if (includeCreatedAt) csv += "Created At,";
   if (includeUpdatedAt) csv += "Updated At,";
 
-  const fields = Object.values(log.fields);
+  const fields = Object.values(model.fields);
   for (const field of fields) {
     csv += (useIdsAsHeaders ? field.id : field.name) + ",";
   }
   csv = csv.slice(0, -1);
   csv += "\r\n";
-  const entries: any[] = Object.values(log.entries);
+  const entries: any[] = Object.values(model.entries);
   for (const entry of entries) {
     if (!entry || !entry.value) continue;
     if (includeID) csv += entry.id + ",";
@@ -70,7 +63,7 @@ export const logEntriesToCSV = (
   return csv;
 };
 
-export const logToMetaCSV = (log: Log) => {
+export const logToMetaCSV = (model: Model) => {
   const headers = [
     "id",
     "name",
@@ -85,7 +78,7 @@ export const logToMetaCSV = (log: Log) => {
     "options",
   ];
   let csv = headers.join(",") + "\r\n";
-  const fields = Object.values(log.fields);
+  const fields = Object.values(model.fields);
   for (const field of fields) {
     for (const key of headers) {
       const value = String((field as any)[key]) || "";
@@ -197,41 +190,6 @@ export const notify = (options: NotificationOptions) => {
       "Mozilla Firefox", or "Microsoft Edge".`
     );
   }
-};
-
-/**
- * Get the timestamp for a log recurrence
- * @param {LogRecurrence} recurrence - The recurrence to use
- * @returns {number} - The timestamp
- */
-export const getTimestamp = (recurrence?: LogRecurrence): number => {
-  const now = Date.now();
-  if (!recurrence) return now;
-  const { interval, unit } = recurrence;
-  let timestamp = now;
-  switch (unit) {
-    case "minute":
-      timestamp = now + interval * 60 * 1000;
-      break;
-    case "hour":
-      timestamp = now + interval * 60 * 60 * 1000;
-      break;
-    case "day":
-      timestamp = now + interval * 24 * 60 * 60 * 1000;
-      break;
-    case "week":
-      timestamp = now + interval * 7 * 24 * 60 * 60 * 1000;
-      break;
-    case "month":
-      timestamp = now + interval * 30 * 24 * 60 * 60 * 1000;
-      break;
-    case "year":
-      timestamp = now + interval * 365 * 24 * 60 * 60 * 1000;
-      break;
-    default:
-      break;
-  }
-  return timestamp;
 };
 
 export const decode = (data: string, depth = 1):string => {

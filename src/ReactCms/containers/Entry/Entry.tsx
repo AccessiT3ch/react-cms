@@ -5,18 +5,9 @@ import { Button, Col, Container, Form, Row } from "react-bootstrap";
 import { Formik } from "formik";
 
 import store from "../../../store/store";
-import {
-  addLogEntry,
-  ADD_LOG_ENTRY_ACTION,
-  FieldValue,
-  Log,
-  LogEntry as LogEntryType,
-  LogFields,
-  updateLogEntry,
-  UPDATE_LOG_ENTRY_ACTION,
-  getLog,
-  getLogEntry,
-} from "../../../store/Log";
+
+import { Model, Field, Entry, ValueTypes, FieldTextType, FieldSelectType, FieldNumberRangeType, FieldNumberType, FieldDateType, FieldBooleanType } from "../../settings";
+import {addEntry, getEntry, updateEntry, getModel } from "../../reducer";
 
 import { Header } from "../../../App/components/Header";
 import { FieldText } from "../../components/FieldText";
@@ -53,37 +44,37 @@ export const LABEL = "label";
 // Display strings
 export const ENTRY_HEADER = " Entry";
 export const ENTRY_LABEL = "Entry Label";
-export const NO_LOG_FIELDS = "This log doesn't have any fields yet";
+export const NO_MODEL_FIELDS = "This model doesn't have any fields yet";
 export const ENTRY_NOT_SAVED = "Entry not saved";
 export const ENTRY_NOT_UPDATED = "Entry not updated";
 
 /**
- * Log Entry Submission Callback
+ *  Entry Submission Callback
  */
-export interface OnLogEntrySubmitParams {
-  values: { [fieldId: string]: FieldValue; label: string };
-  log: Log;
-  entry: LogEntryType;
+export interface OnEntrySubmitParams {
+  values: { [fieldId: string]: ValueTypes; label: string };
+  model: Model;
+  entry: Entry;
 }
-export const onLogEntrySubmit = async ({
+export const onEntrySubmit = async ({
   values,
-  log,
+  model,
   entry,
-}: OnLogEntrySubmitParams) => {
+}: OnEntrySubmitParams) => {
   const entryId: string = entry && entry.id ? entry.id : uuidv4();
   const newValues = {
     ...values,
   };
 
-  const newEntry: LogEntryType = {
+  const newEntry: Entry = {
     ...entry,
     id: entryId,
     values: newValues,
   };
 
   await store.dispatch(
-    (entry ? updateLogEntry : addLogEntry)({
-      logId: log.id,
+    (entry ? updateEntry : addEntry)({
+      logId: model.id,
       entryId,
       entry: newEntry,
     })
@@ -101,7 +92,7 @@ export interface LogEntryProps {
 }
 
 export interface LogEntryValues {
-  [fieldId: string]: FieldValue;
+  [fieldId: string]: ValueTypes;
   label: string;
 }
 
@@ -111,14 +102,14 @@ export const LogEntry: FC<LogEntryProps> = ({
   const navigate = useNavigate();
 
   // Get log and entry from store
-  const { id: logId, entry: entryId } = useParams() as {
+  const { id: modelId, entry: entryId } = useParams() as {
     id: string;
     entry: string;
   };
-  const log: Log = getLog(store.getState(), logId);
-  const entry: LogEntryType = getLogEntry(store.getState(),logId, entryId);
-  const { name, fields, labelOption } = log || {};
-  const logFields: LogFields[] = Object.values(fields || {});
+  const model: Model = getModel(store.getState(), modelId);
+  const entry: Entry = getEntry(store.getState(),modelId, entryId);
+  const { name, fields, labelOption } = model || {};
+  const fieldsArray: Field[] = Object.values(fields || {});
 
   // Page state
   const [cancel, setCancel] = React.useState(false);
@@ -128,7 +119,7 @@ export const LogEntry: FC<LogEntryProps> = ({
 
   React.useEffect(() => {
     // If log doesn't exist, redirect to Home
-    if (!log) {
+    if (!model) {
       navigate(HOME_URL);
       setToast({
         show: true,
@@ -136,17 +127,16 @@ export const LogEntry: FC<LogEntryProps> = ({
         context: LOG_NOT_FOUND,
         status: WARNING,
       });
-    } else if (!logFields.length) {
+    } else if (!fieldsArray.length) {
       // If log doesn't have any fields, redirect to Edit page
       setToast({
         show: true,
-        name: OOPS,
-        context: NO_LOG_FIELDS,
+        content: `No fields found.`,
         status: WARNING,
       });
-      navigate(getEditLogURL(logId));
+      navigate(getEditLogURL(modelId));
     }
-  }, [log, logId, navigate, logFields.length]);
+  }, [model, modelId, navigate, fieldsArray.length]);
 
   React.useEffect(() => {
     // If cancel is true, redirect to back
@@ -157,11 +147,11 @@ export const LogEntry: FC<LogEntryProps> = ({
 
   // populate initial entry values
   const initialValues = {} as any;
-  for (const f of logFields) {
+  for (const f of fieldsArray) {
     initialValues[f.id] = isNewEntry ? f.defaultValue : entry.values[f.id];
   }
 
-  return !log || !logFields.length ? null : (
+  return !model || !fieldsArray.length ? null : (
     <>
       <Container>
         <Row>
@@ -186,13 +176,13 @@ export const LogEntry: FC<LogEntryProps> = ({
             //     tag: log.id,
             //   });
             // }
-            onLogEntrySubmit({ values, log, entry, });
+            onEntrySubmit({ values, model, entry, });
             setToast({
               show: true,
-              name: log.name,
-              context: isNewEntry
-                ? ADD_LOG_ENTRY_ACTION
-                : UPDATE_LOG_ENTRY_ACTION,
+              name: model.name,
+              content: isNewEntry
+                ? `New entry added`
+                : `Entry updated`,
             });
             setCancel(true);
           }}
@@ -218,25 +208,25 @@ export const LogEntry: FC<LogEntryProps> = ({
                         />
                       </Form.Group>
                     )}
-                    {logFields.map((field: LogFields) => {
+                    {fieldsArray.map((field: Field) => {
                       const { id, type } = field;
 
                       return (
                         <Form.Group key={id} className="entry__field_container">
                           {type === TEXT && (
-                            <FieldText {...formikProps} field={field} />
+                            <FieldText {...formikProps} field={field as FieldTextType} />
                           )}
                           {type === NUMBER && (
-                            <FieldNumber {...formikProps} field={field} />
+                            <FieldNumber {...formikProps} field={field as FieldNumberType | FieldNumberRangeType} />
                           )}
                           {type === DATE && (
-                            <FieldDate {...formikProps} field={field} />
+                            <FieldDate {...formikProps} field={field as FieldDateType} />
                           )}
                           {type === BOOLEAN && (
-                            <FieldBoolean {...formikProps} field={field} />
+                            <FieldBoolean {...formikProps} field={field as FieldBooleanType} />
                           )}
                           {type === SELECT && (
-                            <FieldSelect {...formikProps} field={field} />
+                            <FieldSelect {...formikProps} field={field as FieldSelectType} />
                           )}
                         </Form.Group>
                       );
@@ -253,10 +243,10 @@ export const LogEntry: FC<LogEntryProps> = ({
                         setCancel(true);
                         setToast({
                           show: true,
-                          name: log.name,
+                          name: model.name,
                           context: isNewEntry
-                            ? ENTRY_NOT_SAVED
-                            : ENTRY_NOT_UPDATED,
+                            ? `Entry not saved`
+                            : `Entry not updated`,
                           status: SECONDARY,
                         });
                       }}

@@ -27,7 +27,7 @@ export interface Field extends CrudState {
   defaultValue: ValueTypes;
 }
 
-export interface FieldText extends Field {
+export interface FieldTextType extends Field {
   type: "text";
   option: "text" | "textarea";
   typeOptions: ["text", "textarea"];
@@ -36,7 +36,7 @@ export interface FieldText extends Field {
   max: number;
 }
 
-export interface FieldNumber extends Field {
+export interface FieldNumberType extends Field {
   type: "number";
   min: number;
   max: number;
@@ -47,13 +47,13 @@ export interface FieldNumber extends Field {
   unit: string;
 }
 
-export interface FieldNumberRange extends FieldNumber {
+export interface FieldNumberRangeType extends FieldNumberType {
   name: "New Range Field",
   option: "range",
   defaultValue: [number, number],
 }
 
-export interface FieldBoolean extends Field {
+export interface FieldBooleanType extends Field {
   type: "boolean";
   typeOptions: ["checkbox", "switch"],
   typeOptionStrings: ["Checkbox", "Switch"],
@@ -62,7 +62,7 @@ export interface FieldBoolean extends Field {
   defaultValue: boolean;
 }
 
-export interface FieldSelect extends Field {
+export interface FieldSelectType extends Field {
   type: "select";
   options: string;
   option: "one" | "many";
@@ -71,14 +71,14 @@ export interface FieldSelect extends Field {
   defaultValue: string;
 }
 
-export interface FieldDate extends Field {
+export interface FieldDateType extends Field {
   type: "date";
   option: "date" | "datetime-local" | "time";
   typeOptions: ["date", "datetime-local", "time"];
   typeOptionStrings: ["Date", "Date & Time", "Time"];
 }
 
-export type FieldTypes = FieldText | FieldNumber | FieldNumberRange | FieldBoolean | FieldSelect | FieldDate;
+export type FieldTypes = FieldTextType | FieldNumberType | FieldNumberRangeType | FieldBooleanType | FieldSelectType | FieldDateType;
 
 export interface FieldState {
   [fieldId: string]: FieldTypes;
@@ -104,6 +104,7 @@ export interface Model extends CrudState {
   deletedEntries: string[];
   sort?: string;
   order?: "asc" | "desc";
+  labelOption?: "date" | "text" | string;
 }
 
 export interface ModelState {
@@ -128,7 +129,7 @@ export const initialFieldState: Field = {
   ...initialCRUDState,
 };
 
-export const initialFieldTextState: FieldText = {
+export const initialFieldTextState: FieldTextType = {
   ...initialFieldState,
   type: "text",
   option: "text",
@@ -138,7 +139,7 @@ export const initialFieldTextState: FieldText = {
   max: 0,
 };
 
-export const initialFieldNumberState: FieldNumber = {
+export const initialFieldNumberState: FieldNumberType = {
   ...initialFieldState,
   name: "New Number Field",
   type: "number",
@@ -152,14 +153,14 @@ export const initialFieldNumberState: FieldNumber = {
   unit: "",
 };
 
-export const initialFieldNumberRangeState: FieldNumberRange = {
+export const initialFieldNumberRangeState: FieldNumberRangeType = {
   ...initialFieldNumberState,
   name: "New Range Field",
   option: "range",
   defaultValue: [0, 100],
 };
 
-export const initialFieldBooleanState: FieldBoolean = {
+export const initialFieldBooleanState: FieldBooleanType = {
   ...initialFieldState,
   name: "New Boolean Field",
   type: "boolean",
@@ -171,7 +172,7 @@ export const initialFieldBooleanState: FieldBoolean = {
   falseLabel: "False",
 };
 
-export const initialFieldSelectState: FieldSelect = {
+export const initialFieldSelectState: FieldSelectType = {
   ...initialFieldState,
   name: "New Select Field",
   type: "select",
@@ -182,7 +183,7 @@ export const initialFieldSelectState: FieldSelect = {
   options: "",
 };
 
-export const initialFieldDateState: FieldDate = {
+export const initialFieldDateState: FieldDateType = {
   ...initialFieldState,
   name: "New Date Field",
   type: "date",
@@ -192,27 +193,35 @@ export const initialFieldDateState: FieldDate = {
   defaultValue: new Date().toLocaleString(),
 };
 
-
+export const initialModelState: Model = {
+  ...initialCRUDState,
+  fields: {},
+  entries: {},
+  deletedFields: [],
+  deletedEntries: [],
+  sort: "",
+  order: "asc",
+};
 /** ********** Helper Function ********** */
 
 export const getNewFieldState = (type: string = "text"): Field => {
   let newFieldState = {} as Field;
   switch (type) {
     case "number":
-      newFieldState = { ...initialFieldNumberState } as FieldNumber;
+      newFieldState = { ...initialFieldNumberState } as FieldNumberType;
       break;
     case "boolean":
-      newFieldState = { ...initialFieldBooleanState } as FieldBoolean;
+      newFieldState = { ...initialFieldBooleanState } as FieldBooleanType;
       break;
     case "select":
-      newFieldState = { ...initialFieldSelectState } as FieldSelect;
+      newFieldState = { ...initialFieldSelectState } as FieldSelectType;
       break;
     case "date":
-      newFieldState = { ...initialFieldDateState } as FieldDate;
+      newFieldState = { ...initialFieldDateState } as FieldDateType;
       break;
     case "text":
     default:
-      newFieldState = { ...initialFieldTextState } as FieldText;
+      newFieldState = { ...initialFieldTextState } as FieldTextType;
       break;
   }
   return newFieldState;

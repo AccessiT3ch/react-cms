@@ -2,13 +2,13 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { FieldText } from "./FieldText";
-import { initialTextFieldState, TextLogField } from "../../../store/Log";
+import { initialFieldTextState, FieldTextType } from "../../settings";
 import { mockFormikProps } from "../../../testUtils";
 
 const field = {
-  ...initialTextFieldState,
+  ...initialFieldTextState,
   id: "test",
-} as TextLogField;
+} as FieldTextType;
 const formikProps = {
   ...mockFormikProps,
   values: { [field.id]: "Hello World" },

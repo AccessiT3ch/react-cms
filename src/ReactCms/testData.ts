@@ -1,13 +1,12 @@
-export const testLog = {
+export const testModel = {
     "id": "8ef04d1d-3a6d-436f-a6b2-534c363cfa58",
-    "name": "Pain Log",
+    "name": "Pain Model",
     "createdAt": "2023-07-06T21:03:35.658Z",
     "labelOption": "6099f704-ef96-4413-ba50-a8ba38da8d0d",
     "labelOptions": "6099f704-ef96-4413-ba50-a8ba38da8d0d",
     "updatedAt": "2023-07-06T21:03:35.658Z",
     "sort": "b78cc205-9edb-47f3-8d14-9f2415fc4b6b",
     "order": "desc",
-    "syncId": "5fe332ad-d8b9-400d-9ef5-89e50a0a25e6",
     "deletedFields": [],
     "deletedEntries": [],
     "fields": {

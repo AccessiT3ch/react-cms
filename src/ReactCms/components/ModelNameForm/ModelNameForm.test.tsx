@@ -1,14 +1,14 @@
 import React from "react";
 import { act, render } from "@testing-library/react";
 import userEvent from '@testing-library/user-event'
-import { LogNameForm, LogNameFormProps, LOG_NAME } from "./ModelNameForm";
-import { initialLogState } from "../../../store/Log";
+import { ModelNameForm, ModelNameFormProps, MODEL_NAME } from "./ModelNameForm";
+import { initialModelState } from "../../settings";
 import { SAVE, TEXT_DANGER } from "../../../strings";
 
 test("renders without crashing", () => {
-  const props: LogNameFormProps = {
-    log: {
-      ...initialLogState,
+  const props: ModelNameFormProps = {
+    model: {
+      ...initialModelState,
       id: "1",
       name: "Test",
       createdAt: new Date().toISOString(),
@@ -16,13 +16,13 @@ test("renders without crashing", () => {
     },
     onSubmit: jest.fn(),
   };
-  render(<LogNameForm {...props} />);
+  render(<ModelNameForm {...props} />);
 });
 
-test("renders with an input for the log name", () => {
-  const props: LogNameFormProps = {
-    log: {
-      ...initialLogState,
+test("renders with an input for the model name", () => {
+  const props: ModelNameFormProps = {
+    model: {
+      ...initialModelState,
       id: "1",
       name: "Test",
       createdAt: new Date().toISOString(),
@@ -30,18 +30,18 @@ test("renders with an input for the log name", () => {
     },
     onSubmit: jest.fn(),
   };
-  const { getByLabelText, } = render(<LogNameForm {...props} />);
-  const label = getByLabelText(LOG_NAME);
+  const { getByLabelText, } = render(<ModelNameForm {...props} />);
+  const label = getByLabelText(MODEL_NAME);
   expect(label).toBeInTheDocument();
-  const input = document.getElementById("logNameFormInput")
+  const input = document.getElementById("modelNameFormInput")
   expect(input).toBeInTheDocument();
   expect(input).toHaveValue("Test");
 });
 
 test("renders with a submit button", () => {
-  const props: LogNameFormProps = {
-    log: {
-      ...initialLogState,
+  const props: ModelNameFormProps = {
+    model: {
+      ...initialModelState,
       id: "1",
       name: "Test",
       createdAt: new Date().toISOString(),
@@ -49,23 +49,23 @@ test("renders with a submit button", () => {
     },
     onSubmit: jest.fn(),
   };
-  const { getByText } = render(<LogNameForm {...props} />);
+  const { getByText } = render(<ModelNameForm {...props} />);
   const button = getByText(SAVE);
   expect(button).toBeInTheDocument();
 });
 
 test("enables the submit button when the input is not empty", async () => {
-  const props: LogNameFormProps = {
-    log: {
-      ...initialLogState,
+  const props: ModelNameFormProps = {
+    model: {
+      ...initialModelState,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
     onSubmit: jest.fn(),
   };
-  const { getByText } = await act(async () => render(<LogNameForm {...props} />));
+  const { getByText } = await act(async () => render(<ModelNameForm {...props} />));
   const user =  userEvent.setup();
-  const input = document.getElementById("logNameFormInput")
+  const input = document.getElementById("modelNameFormInput")
   const button = getByText(SAVE);
   expect(button).toBeDisabled();
   
@@ -75,17 +75,17 @@ test("enables the submit button when the input is not empty", async () => {
 });
 
 test("calls the onSubmit function when the form is submitted", async () => {
-  const props: LogNameFormProps = {
-    log: {
-      ...initialLogState,
+  const props: ModelNameFormProps = {
+    model: {
+      ...initialModelState,
       name: "Test",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
     onSubmit: jest.fn(),
   };
-  const { getByText } = await act(async () => render(<LogNameForm {...props} />));
-  const input = document.getElementById("logNameFormInput")
+  const { getByText } = await act(async () => render(<ModelNameForm {...props} />));
+  const input = document.getElementById("modelNameFormInput")
   const button = getByText(SAVE);
   const user = userEvent.setup();
 
@@ -100,17 +100,17 @@ test("calls the onSubmit function when the form is submitted", async () => {
 });
 
 test("renders error message when the input is invalid", async () => {
-  const props: LogNameFormProps = {
-    log: {
-      ...initialLogState,
+  const props: ModelNameFormProps = {
+    model: {
+      ...initialModelState,
       name: "",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
     onSubmit: jest.fn(),
   };
-  await act(async () => render(<LogNameForm {...props} />));
-  const input = document.getElementById("logNameFormInput");
+  await act(async () => render(<ModelNameForm {...props} />));
+  const input = document.getElementById("modelNameFormInput");
   expect(document.getElementsByClassName(TEXT_DANGER)).toHaveLength(0);
   await act(() => input!.focus());
   await act(() => input!.blur());

@@ -1,7 +1,7 @@
 import React, { FC, ReactElement } from "react";
 import { FormikProps } from "formik";
 import { Form, InputGroup } from "react-bootstrap";
-import { NumberLogField } from "../../../store/Log";
+import { FieldNumberType } from "../../settings";
 import {
   ASTERISK,
   EMPTY,
@@ -17,7 +17,7 @@ export const MAX = "Max: ";
 
 export interface FieldNumberProps
   extends FormikProps<{ [key: string]: number }> {
-  field: NumberLogField;
+  field: FieldNumberType;
 }
 
 export const FieldNumber: FC<FieldNumberProps> = (props): ReactElement => {

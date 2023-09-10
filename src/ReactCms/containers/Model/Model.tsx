@@ -14,12 +14,13 @@ import { Header } from "../../../App/components/Header";
 
 import store from "../../../store/store";
 import {
-  removeLogEntry,
-  Log as LogType,
-  LogEntry,
-  REMOVE_LOG_ENTRY_ACTION,
-  getLog,
-} from "../../../store/Log";
+  removeEntry,
+  getModel
+} from "../../reducer";
+import {
+  Model as ModelType,
+  Entry,
+} from "../../settings";
 import "./Model.scss";
 import {
   ACTIONS,
@@ -37,7 +38,6 @@ import {
   HOME,
   HOME_URL,
   HYPHEN,
-  LOG_NOT_FOUND,
   OOPS,
   PRIMARY,
   SECONDARY,
@@ -47,8 +47,8 @@ import {
   TEXT,
   WARNING,
 } from "../../../strings";
-import { SetToast } from "../../components/Toaster";
-import { entryFilter, LogEntryFilter } from "../../components/EntryFilter";
+import { SetToast, ToastType } from "../../components/Toaster";
+import { entryFilter, EntryFilter } from "../../components/EntryFilter";
 
 // Display strings
 export const ENTRIES_HEADER = "Entries ";
@@ -58,33 +58,28 @@ export const DATE_CREATED = "Date Created";
 export const REVERSED = "Reversed";
 
 export interface onDeleteEntryParams {
-  log: LogType;
+  model: ModelType;
   entryId: string;
 }
 
 export const onDeleteEntry = async ({
-  log, 
+  model, 
   entryId,
 }: onDeleteEntryParams) => {
-  await store.dispatch(removeLogEntry({ logId: log.id, entryId }));
+  await store.dispatch(removeEntry({ modelId: model.id, entryId }));
 };
 
-/**
- * Log Page
- * @param {LogProps} logProps - props
- */
-
-export interface LogProps {
+export interface ModelProps {
   setToast: SetToast;
 }
 
-export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
+export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
   const navigate = useNavigate();
 
   // Get log from store
   const { id } = useParams() as { id: string };
-  const log: LogType = getLog(store.getState(), id);
-  const { name, fields, labelOption, sort, order } = log || {};
+  const model: ModelType = getModel(store.getState(), id);
+  const { name, fields, labelOption, sort, order } = model || {};
 
   // Set and sidebar states
   const [sortBy, setSortBy] = React.useState(sort || CREATED_AT);
@@ -92,29 +87,29 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
   const [filter, setFilter] = React.useState([] as any);
 
   // Define entries
-  const entries: LogEntry[] = log
-    ? Object.values(log.entries || {}).filter((entry: LogEntry) =>
+  const entries: Entry[] = model
+    ? Object.values(model.entries || {}).filter((entry: Entry) =>
       entryFilter(entry, filter)
     )
     : [];
   const hasEntries = entries.length > 0;
 
   // React.useEffect(() => {
-  //   // todo: sync log metadata; sync log entries
+  //   // todo: sync model metadata; sync model entries
   // }, []);
 
-  // Navigate to home if log not found
+  // Navigate to home if model not found
   React.useEffect(() => {
-    if (!log) {
+    if (!model) {
       navigate(HOME_URL);
       setToast({
         show: true,
         name: OOPS,
-        context: LOG_NOT_FOUND,
+        context: "Model not found",
         status: WARNING,
       });
     }
-  }, [log, navigate]);
+  }, [model, navigate]);
 
   const isLabelDate = labelOption === DATE;
   const isLabelText = labelOption === TEXT;
@@ -161,7 +156,7 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
                   className={`text-${field.id === sortBy ? PRIMARY : SECONDARY
                     }`}
                 >
-                  {field.name}
+                  { field.name}
                 </Dropdown.Item>
               ))}
               <Dropdown.Divider />
@@ -176,7 +171,7 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
               </Dropdown.Item>
             </DropdownButton>
 
-            <LogEntryFilter log={log} setFilter={setFilter} />
+            <EntryFilter model={model} setFilter={setFilter} />
           </div>
         </Col>
       </Row>
@@ -186,7 +181,7 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
           {hasEntries ? (
             entries
               // todo: extract sort logic to helpers
-              .sort((a: LogEntry, b: LogEntry) => {
+              .sort((a: Entry, b: Entry) => {
                 const valueA =
                   sortBy === CREATED_AT ? a[sortBy] : a.values[sortBy];
                 const valueB =
@@ -217,7 +212,7 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
                 return 0;
               })
               // todo: extract card to component
-              .map((entry: LogEntry) => {
+              .map((entry: Entry) => {
                 const labelText = isLabelDate
                   ? new Date(entry.createdAt as string).toLocaleString()
                   : isLabelText
@@ -277,14 +272,13 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
                         <Dropdown.Item
                           onClick={() => {
                             onDeleteEntry({
-                              log,
+                              model,
                               entryId: entry.id,
                             });
                             setToast({
                               show: true,
-                              context: REMOVE_LOG_ENTRY_ACTION,
-                              name: log.name,
-                            });
+                              content: `Entry deleted`,
+                            } as ToastType);
                           }}
                         >
                           {DELETE_ENTRY}
@@ -335,4 +329,4 @@ export const Log: FC<LogProps> = ({ setToast }): ReactElement => {
   );
 };
 
-export default Log;
+export default Model;

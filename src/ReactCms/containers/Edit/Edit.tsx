@@ -4,15 +4,8 @@ import { Accordion, Button, Col, Modal, Row } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 
 import store from "../../../store/store";
-import {
-  updateLog,
-  removeLog,
-  removeLogField,
-  Log,
-  LogFields,
-  REMOVE_LOG_ACTION,
-  getLog,
-} from "../../../store/Log";
+import { Model, Field } from "../../settings";
+import { getModel, updateModel, removeModel, removeField } from "../../reducer";
 
 import { LogNameForm } from "../../components/ModelNameForm";
 import { EditFieldsTable } from "../../components/EditFieldsTable";
@@ -55,55 +48,37 @@ export const LOG_SETTINGS = "Log Settings";
 export const DELETE_LOG = "Delete Log";
 export const FIELD_SETTINGS = "Field Settings";
 
-export interface OnUpdateLogParams {
-  log: Log;
-  values: any;
+export interface OnUpdateModelParams {
+  model: Model;
+  values: {[key: string]: any};
 }
 
-/**
- * Edit log callback
- * @param {Log} log - log to edit
- * @param {any} values - values to update
- * @param {boolean} authenticated - optional authenticated state
- * @param {DataSyncState} dataSyncState - optional data sync state
- */
-export const onUpdateLog = async ({
-  log,
+export const onUpdateModel = async ({
+  model,
   values,
-}: OnUpdateLogParams): Promise<void> => {
-  const updatedLog: Log = {
-    ...log,
+}: OnUpdateModelParams): Promise<void> => {
+  const updatedModel: Model = {
+    ...model,
     ...values,
   };
-  await store.dispatch(updateLog({ logId: log.id, log: updatedLog }));
+  await store.dispatch(updateModel({ modelId: model.id, model: updatedModel }));
 };
 
-/**
- * Delete log callback
 
- * @param {Log} log - log to delete
- */
-export const onDeleteLog = (log: Log) => {
-  // todo: remove log from data sync state
-  store.dispatch(removeLog({ logId: log.id }));
+export const onDeleteModel = (model: Model) => {
+  store.dispatch(removeModel({ modelId: model.id }));
 };
 
 export interface onDeleteFieldParams {
-  log: Log;
+  model: Model;
   fieldId: string;
 }
 export const onDeleteField = async ({
-  log,
+  model,
   fieldId,
 }:onDeleteFieldParams) => {
-  await store.dispatch(removeLogField({ logId: log.id, fieldId }));
+  await store.dispatch(removeField({ modelId: model.id, fieldId }));
 };
-
-/**
- * Edit log page
- * @param {EditProps} editProps - props
- * @returns {ReactElement} - edit page
- */
 
 export interface EditProps {
   setToast: SetToast;
@@ -112,27 +87,26 @@ export interface EditProps {
 export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
   const navigate = useNavigate();
 
-  // Get Log and Field ids from URL
-  const { id, field: fid } = useParams() as { id: string; field: string };
+  // Get Model and Field ids from URL
+  const { id, field } = useParams() as { id: string; field: string };
 
-  // Get log from store
-  const log: Log = getLog(store.getState(), id);
+  // Get model from store
+  const model: Model = getModel(store.getState(), id);
 
-  // If log is not found, redirect to home
-  if (!log || id !== log.id || !log.fields) {
+  // If model is not found, redirect to home
+  if (!model || id !== model.id || !model.fields) {
     navigate(HOME_URL);
   }
 
-
-  // Modal and Sidebar states
-  const [showModal, setShowModal] = React.useState(fid ? true : false);
+  // Modal states
+  const [showModal, setShowModal] = React.useState(field ? true : false);
   const [modalMode, setModalMode] = React.useState(
-    fid && fid !== NEW ? EDIT : ADD
+    field && field !== NEW ? EDIT : ADD
   ); // "add" or "edit"
 
   // Current field state
   const [fieldId, setFieldId] = React.useState(
-    fid && fid !== NEW ? fid : EMPTY
+    field && field !== NEW ? field : EMPTY
   );
 
   // Reset modal to initial state
@@ -145,7 +119,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
 
   const onEditField = (
     _: React.MouseEvent<HTMLElement, MouseEvent>,
-    field: LogFields
+    field: Field
   ) => {
     navigate(getEditLogFieldURL(id, field.id));
     setShowModal(true);
@@ -161,7 +135,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
     // todo: sync log fields
   };
 
-  const fields: LogFields[] = Object.values(log.fields);
+  const fields: Field[] = Object.values(model.fields);
 
   return (
     <>
@@ -169,7 +143,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
         <Row>
           <Col>
             <Header
-              title={EDIT_HEADER + log.name}
+              title={EDIT_HEADER + model.name}
             />
           </Col>
         </Row>
@@ -192,7 +166,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
                   onDeleteClick={(
                     e: React.MouseEvent<HTMLElement, MouseEvent>,
                     fieldId: string
-                  ) => onDeleteField({ log, fieldId })}
+                  ) => onDeleteField({ model, fieldId })}
                   onEditClick={onEditField}
                   setToast={setToast}
                 />
@@ -217,14 +191,14 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
               <h2>{LOG_SETTINGS}</h2>
             </Accordion.Header>
             <Accordion.Body>
-              <LogNameForm onSubmit={onUpdateLog} log={log} />
-              <EditSortForm log={log} onSubmit={onUpdateLog} />
+              <LogNameForm onSubmit={onUpdateModel} model={model} />
+              <EditSortForm model={model} onSubmit={onUpdateModel} />
               {/* todo: Introduce Entry Settings subsection when there are multiple settings
               <hr className="edit__settings_hr" />
               <h3>Entry Settings</h3>
               <hr /> */}
               <br />
-              <EditLabelForm log={log} onSubmit={onUpdateLog} />
+              <EditLabelForm model={model} onSubmit={onUpdateModel} />
               {/* todo: Implement recurrence and reminders when there is a backend
               <br />
               <EditRecurrenceForm log={log} onSubmit={onUpdateLog} /> */}
@@ -242,10 +216,10 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
                   e.preventDefault();
                   setToast({
                     show: true,
-                    context: REMOVE_LOG_ACTION,
-                    name: log.name,
+                    content: `Model deleted`,
+                    name: model.name,
                   });
-                  onDeleteLog(log);
+                  onDeleteModel(model);
                   navigate(HOME_URL);
                 }}
               >
@@ -264,7 +238,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
           <Col>
             <Button
               variant={SECONDARY}
-              onClick={() => navigate(getLogUrl(log.id))}
+              onClick={() => navigate(getLogUrl(model.id))}
             >
               {VIEW_LOG}
             </Button>
@@ -272,7 +246,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
           <Col>
             <Button
               variant={PRIMARY}
-              onClick={() => navigate(getAddLogEntryURL(log.id))}
+              onClick={() => navigate(getAddLogEntryURL(model.id))}
             >
               {ADD_ENTRY}
             </Button>
@@ -288,7 +262,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
         <Modal.Body>
           <EditFieldForm
             fieldId={fieldId}
-            log={log}
+            model={model}
             modalMode={modalMode}
             resetModal={resetModal}
             setToast={setToast}

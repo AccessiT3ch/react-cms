@@ -1,7 +1,7 @@
 import { FormikProps } from "formik";
 import React, { FC, ReactElement } from "react";
 import { Form } from "react-bootstrap";
-import { initialFieldStates } from "../../../store/Log";
+import { getNewFieldState } from "../../settings";
 import { SELECT, TEXT_DANGER, TEXT_MUTED } from "../../../strings";
 import { capitalizeFirstLetter } from "../../../utils";
 
@@ -18,7 +18,7 @@ export const TypeOptionSelect: FC<TypeOptionSelectProps> = ({
   handleChange,
   handleBlur,
 }): ReactElement | null => {
-  const { typeOptions, typeOptionStrings } = initialFieldStates[values.type];
+  const { typeOptions, typeOptionStrings } = getNewFieldState(values.type);
   if (!typeOptions || !typeOptionStrings) return null;
 
   return (
@@ -34,7 +34,7 @@ export const TypeOptionSelect: FC<TypeOptionSelectProps> = ({
         onBlur={handleBlur}
         value={values.option}
       >
-        {typeOptions.map((option, i) => {
+        {typeOptions.map((option:any, i:number) => {
           const key = `${values.type}-${i}`;
           const displayValue = typeOptionStrings[i];
           return (

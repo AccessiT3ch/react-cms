@@ -1,7 +1,7 @@
 import React, { FC, ReactElement } from "react";
 import { FormikProps } from "formik";
 import { Form } from "react-bootstrap";
-import { SelectLogField } from "../../../store/Log";
+import { FieldSelectType } from "../../settings";
 import {
   ASTERISK,
   COMMA,
@@ -16,7 +16,7 @@ export const SELECT_AN_OPTION = "Select an option";
 
 export interface EditFieldSelectProps
   extends FormikProps<{ [key: string]: string|string[] }> {
-  field: SelectLogField;
+  field: FieldSelectType;
 }
 
 export const FieldSelect: FC<EditFieldSelectProps> = (props): ReactElement => {

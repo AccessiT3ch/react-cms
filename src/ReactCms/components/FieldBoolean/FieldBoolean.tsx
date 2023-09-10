@@ -1,7 +1,7 @@
 import React, { FC, ReactElement } from "react";
 import { Form } from "react-bootstrap";
 import { FormikProps } from "formik";
-import { BooleanLogField } from "../../../store/Log";
+import { FieldBooleanType } from "../../settings";
 import {
   ASTERISK,
   CHECKBOX,
@@ -14,7 +14,7 @@ import "./fieldBoolean.scss";
 
 export interface FieldBooleanProps
   extends FormikProps<{ [key: string]: boolean }> {
-  field: BooleanLogField;
+  field: FieldBooleanType;
 }
 
 export const FieldBoolean: FC<FieldBooleanProps> = (props): ReactElement => {

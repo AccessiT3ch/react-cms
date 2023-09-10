@@ -1,19 +1,19 @@
 import React from "react";
 import { act, render, waitFor } from "@testing-library/react";
 import { EditSortForm, EditSortFormProps } from "./EditSortForm";
-import { initialTextFieldState } from "../../../store/Log";
+import { initialFieldTextState } from "../../settings";
 
-const log = {
+const model = {
   fields: {
-    "field1": { ...initialTextFieldState, id: "field1" },
-    "field2": { ...initialTextFieldState, id: "field2" },
+    "field1": { ...initialFieldTextState, id: "field1" },
+    "field2": { ...initialFieldTextState, id: "field2" },
   }
 };
 
 describe("EditSortForm", () => {
   test("renders without crashing", () => {
     const props: EditSortFormProps = {
-      log: { ...log } as any,
+      model: { ...model } as any,
       onSubmit: jest.fn(),
     };
     render(<EditSortForm {...props} />);
@@ -21,7 +21,7 @@ describe("EditSortForm", () => {
 
   test("renders correctly when no fields", () => {
     const props: EditSortFormProps = {
-      log: { ...log, fields: {} } as any,
+      model: { ...model, fields: {} } as any,
       onSubmit: jest.fn(),
     };
     render(<EditSortForm {...props} />);
@@ -33,7 +33,7 @@ describe("EditSortForm", () => {
 
   test("renders correctly", () => {
     const props: EditSortFormProps = {
-      log: { ...log } as any,
+      model: { ...model } as any,
       onSubmit: jest.fn(),
     };
     const { getByText, getAllByText } = render(<EditSortForm {...props} />);
@@ -43,12 +43,12 @@ describe("EditSortForm", () => {
     const sort = document.querySelector("select[name='sort']");
     expect(sort).toBeInTheDocument();
     const sortOptions = sort?.querySelectorAll("option");
-    expect(sortOptions?.length).toBe(Object.keys(log.fields).length + 1);
+    expect(sortOptions?.length).toBe(Object.keys(model.fields).length + 1);
   });
 
   test("calls onSubmit when submitted", async () => {
     const props: EditSortFormProps = {
-      log: { ...log } as any,
+      model: { ...model } as any,
       onSubmit: jest.fn(),
     };
     render(<EditSortForm {...props} />);

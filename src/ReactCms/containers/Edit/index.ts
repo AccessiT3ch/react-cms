@@ -1,2 +1,2 @@
-export { Edit, onUpdateLog } from "./Edit";
-export type { OnUpdateLogParams } from "./Edit";
+export { Edit, onUpdateModel } from "./Edit";
+export type { OnUpdateModelParams } from "./Edit";

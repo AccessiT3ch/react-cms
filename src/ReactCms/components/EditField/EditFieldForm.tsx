@@ -5,16 +5,8 @@ import * as Yup from "yup";
 import { Form, Button, Row, Col } from "react-bootstrap";
 
 import store from "../../../store/store";
-import {
-  addLogField,
-  updateLogField,
-  initialFieldStates,
-  initialTextFieldState,
-  Log,
-  LogFields,
-  ADD_LOG_FIELD_ACTION,
-  UPDATE_LOG_FIELD_ACTION,
-} from "../../../store/Log";
+import { addField, updateField } from "../../reducer";
+import { getNewFieldState, Model, Field } from "../../settings";
 
 import { EditFieldText } from "./EditFieldText";
 import { EditFieldNumber } from "./EditFieldNumber";
@@ -66,19 +58,19 @@ export const FIELD_REQUIRED_HELP_TEXT = "Is this field required?";
 
 export interface HandleFieldsParams {
   values: { [key: string]: string };
-  log: Log;
-  field: LogFields;
+  model: Model;
+  field: Field;
 }
 export const onHandleField = async ({
   values,
-  log,
+  model,
   field,
 }: HandleFieldsParams) => {
   const { id, type } = values;
   const prevField = {
     ...(field.type === type
       ? field
-      : { ...field, ...initialFieldStates[type] }),
+      : { ...field, ...getNewFieldState(type) }),
   };
 
   const newField = {
@@ -89,15 +81,15 @@ export const onHandleField = async ({
 
   if (id) {
     store.dispatch(
-      updateLogField({ logId: log.id, fieldId: id, field: newField })
+      updateField({ modelId: model.id, fieldId: id, field: newField })
     );
   } else {
-    store.dispatch(addLogField({ logId: log.id, field: newField }));
+    store.dispatch(addField({ modelId: model.id, field: newField }));
   }
 };
 
 export interface EditFieldFormProps {
-  log: Log;
+  model: Model;
   fieldId: string | undefined;
   modalMode: string;
   resetModal: () => void;
@@ -109,14 +101,14 @@ export interface EditFieldFormValues {
 
 export const EditFieldForm: FC<EditFieldFormProps> = ({
   fieldId,
-  log,
+  model,
   modalMode,
   resetModal,
   setToast,
 }): ReactElement => {
   const fieldState: EditFieldFormValues = fieldId
-    ? log.fields[fieldId]
-    : { ...initialTextFieldState, name: EMPTY };
+    ? model.fields[fieldId]
+    : { ...(getNewFieldState()), name: EMPTY };
   const isNewField = !fieldId;
   return (
     <Formik
@@ -134,13 +126,13 @@ export const EditFieldForm: FC<EditFieldFormProps> = ({
       onSubmit={(values: { [key: string]: string }) => {
         onHandleField({
           values,
-          log,
-          field: fieldState as LogFields,
+          model,
+          field: fieldState as Field,
         });
         setToast({
           show: true,
-          context: isNewField ? ADD_LOG_FIELD_ACTION : UPDATE_LOG_FIELD_ACTION,
-          name: log.name,
+          context: isNewField ? "Field Created." : "Field Updated.",
+          name: model.name,
         });
 
         resetModal();
@@ -188,7 +180,7 @@ export const EditFieldForm: FC<EditFieldFormProps> = ({
                       handleChange(e);
                       const prevValues = { ...values };
                       const newValues = {
-                        ...initialFieldStates[e.target.value],
+                        ...(getNewFieldState(e.target.value)),
                       } as any;
                       setValues({
                         ...prevValues,
@@ -196,7 +188,7 @@ export const EditFieldForm: FC<EditFieldFormProps> = ({
                         id: prevValues.id,
                         name:
                           prevValues.name ===
-                          initialFieldStates[prevValues.type].name
+                          (getNewFieldState(prevValues.type)).name
                             ? newValues.name
                             : prevValues.name,
                       });

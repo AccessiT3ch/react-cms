@@ -1,25 +1,26 @@
 import React from "react";
 import { act, render } from "@testing-library/react";
-import { initialDateFieldState, initialLogEntryState, initialLogState, initialNumberFieldState, initialTextFieldState, Log } from "../../../store/Log";
-import { testLog } from "../../../store/Log/testLogData";
-import { DATE_CREATED, DATE_CREATED_LABEL, entryFilter, EQUALS, FILTER, FILTER_BY_LABEL, getIsFieldDate, getIsFieldEmpty, getIsFieldNumber, GREATER_THAN, INCLUDES, IS_AFTER, IS_BEFORE, LESS_THAN, LogEntryFilter, LogEntryFilterProps, NOT_EQUAL, NOT_INCLUDED } from "./EntryFilter";
+import { initialModelState, initialFieldDateState, initialFieldNumberState, initialFieldTextState, initialCRUDState, Model } from "../../settings";
+import {} from "../../reducer";
+import { testModel } from "../../testData";
+import { DATE_CREATED, DATE_CREATED_LABEL, entryFilter, EQUALS, FILTER, FILTER_BY_LABEL, getIsFieldDate, getIsFieldEmpty, getIsFieldNumber, GREATER_THAN, INCLUDES, IS_AFTER, IS_BEFORE, LESS_THAN, EntryFilter, EntryFilterProps, NOT_EQUAL, NOT_INCLUDED } from "./EntryFilter";
 import { DATE, NUMBER } from "../../../strings";
 
-describe("LogEntryFilter", () => {
+describe("EntryFilter", () => {
 test("renders without crashing", () => {
-  const props: LogEntryFilterProps = {
-    log: { ...initialLogState },
+  const props: EntryFilterProps = {
+    model: { ...initialModelState },
     setFilter: jest.fn(),
   };
-  render(<LogEntryFilter {...props} />);
+  render(<EntryFilter {...props} />);
 });
 
 test("filter button toggles the filter dropdown on click", async () => {
-  const props: LogEntryFilterProps = {
-    log: { ...initialLogState },
+  const props: EntryFilterProps = {
+    model: { ...initialModelState },
     setFilter: jest.fn(),
   };
-  const { getByText } = render(<LogEntryFilter {...props} />);
+  const { getByText } = render(<EntryFilter {...props} />);
   const button = getByText(FILTER);
   expect(button).toBeInTheDocument();
 
@@ -32,11 +33,11 @@ test("filter button toggles the filter dropdown on click", async () => {
 });
 
   test("filter dropdown has all the filter options", async () => {
-    const props: LogEntryFilterProps = {
-      log: { ...testLog } as any,
+    const props: EntryFilterProps = {
+      model: { ...testModel } as any,
       setFilter: jest.fn(),
     };
-    const { getByText, container } = render(<LogEntryFilter {...props} />);
+    const { getByText, container } = render(<EntryFilter {...props} />);
     const button = getByText(FILTER);
     expect(button).toBeInTheDocument();
 
@@ -44,7 +45,7 @@ test("filter button toggles the filter dropdown on click", async () => {
     const filterSelect = container.querySelector("select");
     expect(filterSelect).toBeInTheDocument();
     const options = container.querySelectorAll(".log__entry_filter_field option");
-    expect(options.length).toBe(Object.keys(testLog.fields).length + 1);
+    expect(options.length).toBe(Object.keys(testModel.fields).length + 1);
 
     const operators = container.querySelectorAll(".log__entry_filter_operator option");
     expect(operators.length).toBe(4);
@@ -94,17 +95,17 @@ test("filter button toggles the filter dropdown on click", async () => {
   });
 
   test('entryFilter helper correctly filters entries', () => {
-    const log: Log = {
-      ...initialLogState,
+    const model: Model = {
+      ...initialModelState,
       id: 'test',
       fields: {
-        "field1": { ...initialTextFieldState },
-        "field2": { ...initialNumberFieldState },
-        "field3": { ...initialDateFieldState },
+        "field1": { ...initialFieldTextState },
+        "field2": { ...initialFieldNumberState },
+        "field3": { ...initialFieldDateState },
       },
       entries: {
         "entry1": {
-          ...initialLogEntryState,
+          ...initialCRUDState,
           createdAt: "1",
           values: {
             "label": "",
@@ -114,7 +115,7 @@ test("filter button toggles the filter dropdown on click", async () => {
           },
         },
         "entry2": {
-          ...initialLogEntryState,
+          ...initialCRUDState,
           values: {
             "label": "",
             "field1": "value2",
@@ -123,7 +124,7 @@ test("filter button toggles the filter dropdown on click", async () => {
           },
         },
         "entry3": {
-          ...initialLogEntryState,
+          ...initialCRUDState,
           values: {
             "label": "",
             "field1": "value3",
@@ -134,51 +135,51 @@ test("filter button toggles the filter dropdown on click", async () => {
       },
     };
 
-    const pass = entryFilter(log.entries.entry1, ["field1", EQUALS, "value1"]);
+    const pass = entryFilter(model.entries.entry1, ["field1", EQUALS, "value1"]);
     expect(pass).toBe(true);
-    const fail = entryFilter(log.entries.entry1, ["field1", EQUALS, "value2"]);
+    const fail = entryFilter(model.entries.entry1, ["field1", EQUALS, "value2"]);
     expect(fail).toBe(false);
-    const fail2 = entryFilter(log.entries.entry4, ["field2", EQUALS, "value4"]);
+    const fail2 = entryFilter(model.entries.entry4, ["field2", EQUALS, "value4"]);
     expect(fail2).toBe(false);
-    const pass2 = entryFilter(log.entries.entry1, [] as any);
+    const pass2 = entryFilter(model.entries.entry1, [] as any);
     expect(pass2).toBe(true);
-    const fail3 = entryFilter(log.entries.entry1, ["field4", EQUALS, "value1"]);
+    const fail3 = entryFilter(model.entries.entry1, ["field4", EQUALS, "value1"]);
     expect(fail3).toBe(false);
-    const pass3 = entryFilter(log.entries.entry1, [DATE_CREATED, EQUALS, "1"]);
+    const pass3 = entryFilter(model.entries.entry1, [DATE_CREATED, EQUALS, "1"]);
     expect(pass3).toBe(true);
 
-    const pass4 = entryFilter(log.entries.entry1, ["field1", INCLUDES, "val"]);
+    const pass4 = entryFilter(model.entries.entry1, ["field1", INCLUDES, "val"]);
     expect(pass4).toBe(true);
-    const fail4 = entryFilter(log.entries.entry1, ["field1", INCLUDES, "val2"]);
+    const fail4 = entryFilter(model.entries.entry1, ["field1", INCLUDES, "val2"]);
     expect(fail4).toBe(false);
-    const pass5 = entryFilter(log.entries.entry1, ["field1", NOT_INCLUDED, "val2"]);
+    const pass5 = entryFilter(model.entries.entry1, ["field1", NOT_INCLUDED, "val2"]);
     expect(pass5).toBe(true);
-    const fail5 = entryFilter(log.entries.entry1, ["field1", NOT_INCLUDED, "val"]);
+    const fail5 = entryFilter(model.entries.entry1, ["field1", NOT_INCLUDED, "val"]);
     expect(fail5).toBe(false);
-    const pass6 = entryFilter(log.entries.entry1, ["field1", NOT_EQUAL, "val2"]);
+    const pass6 = entryFilter(model.entries.entry1, ["field1", NOT_EQUAL, "val2"]);
     expect(pass6).toBe(true);
-    const fail6 = entryFilter(log.entries.entry1, ["field1", NOT_EQUAL, "value1"]);
+    const fail6 = entryFilter(model.entries.entry1, ["field1", NOT_EQUAL, "value1"]);
     expect(fail6).toBe(false);
 
-    const pass7 = entryFilter(log.entries.entry1, ["field2", GREATER_THAN, 1] as any);
+    const pass7 = entryFilter(model.entries.entry1, ["field2", GREATER_THAN, 1] as any);
     expect(pass7).toBe(true);
-    const fail7 = entryFilter(log.entries.entry1, ["field2", GREATER_THAN, 2] as any);
+    const fail7 = entryFilter(model.entries.entry1, ["field2", GREATER_THAN, 2] as any);
     expect(fail7).toBe(false);
-    const pass8 = entryFilter(log.entries.entry1, ["field2", LESS_THAN, 3] as any);
+    const pass8 = entryFilter(model.entries.entry1, ["field2", LESS_THAN, 3] as any);
     expect(pass8).toBe(true);
-    const fail8 = entryFilter(log.entries.entry1, ["field2", LESS_THAN, 2] as any);
+    const fail8 = entryFilter(model.entries.entry1, ["field2", LESS_THAN, 2] as any);
     expect(fail8).toBe(false);
 
-    const pass9 = entryFilter(log.entries.entry1, ["field3", IS_BEFORE, "2020-01-02"]);
+    const pass9 = entryFilter(model.entries.entry1, ["field3", IS_BEFORE, "2020-01-02"]);
     expect(pass9).toBe(true);
-    const fail9 = entryFilter(log.entries.entry1, ["field3", IS_BEFORE, "2020-01-01"]);
+    const fail9 = entryFilter(model.entries.entry1, ["field3", IS_BEFORE, "2020-01-01"]);
     expect(fail9).toBe(false);
-    const pass10 = entryFilter(log.entries.entry1, ["field3", IS_AFTER, "2019-01-01"]);
+    const pass10 = entryFilter(model.entries.entry1, ["field3", IS_AFTER, "2019-01-01"]);
     expect(pass10).toBe(true);
-    const fail10 = entryFilter(log.entries.entry1, ["field3", IS_AFTER, "2020-01-02"]);
+    const fail10 = entryFilter(model.entries.entry1, ["field3", IS_AFTER, "2020-01-02"]);
     expect(fail10).toBe(false);
 
-    const fail11 = entryFilter(log.entries.entry1, ["field1", "ASDF", "value1"] as any);
+    const fail11 = entryFilter(model.entries.entry1, ["field1", "ASDF", "value1"] as any);
     expect(fail11).toBe(false);
   });
 });

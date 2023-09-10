@@ -1,8 +1,8 @@
 import React, { FC, ReactElement } from "react";
 import { Formik } from "formik";
 import { InputGroup, Form, Button } from "react-bootstrap";
-import { Log, LogFields } from "../../../store/Log";
-import { OnUpdateLogParams } from "../../containers/Edit"; // todo - move into slice
+import { Model, Field } from "../../settings";
+import { OnUpdateModelParams } from "../../containers/Edit"; // todo - move into slice
 
 import {
   DATE,
@@ -21,24 +21,24 @@ import {
 export const ENTRY_LABEL = "Entry Label";
 
 export interface EditLabelFormProps {
-  log: Log;
-  onSubmit: (params: OnUpdateLogParams) => void;
+  model: Model;
+  onSubmit: (params: OnUpdateModelParams) => void;
 }
 
 export const EditLabelForm: FC<EditLabelFormProps> = ({
-  log,
+  model,
   onSubmit,
 }): ReactElement => {
-  const { fields } = log as Log;
+  const { fields } = model as Model;
   const initialValues = {
-    labelOption: log.labelOption || DATE,
-  } as Log & { [key: string]: string };
-  const logFields: LogFields[] = Object.values(fields || {});
+    labelOption: model.labelOption || DATE,
+  } as Model & { [key: string]: string };
+  const Field: Field[] = Object.values(fields || {});
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={(values: any) =>
-        onSubmit({ log, values, })
+        onSubmit({ model, values, })
       }
     >
       {(formikProps) => {
@@ -59,7 +59,7 @@ export const EditLabelForm: FC<EditLabelFormProps> = ({
                   <option value={TEXT}>{TEXT_LABEL}</option>
                 </optgroup>
                 <optgroup label={FIELDS}>
-                  {logFields.map((field) => (
+                  {Field.map((field) => (
                     <option key={`label-options-${field.id}`} value={field.id}>
                       {field.name}
                     </option>
@@ -70,7 +70,7 @@ export const EditLabelForm: FC<EditLabelFormProps> = ({
               <Button
                 variant={PRIMARY}
                 type={SUBMIT}
-                disabled={formikProps.values.labelOption === log.labelOption}
+                disabled={formikProps.values.labelOption === model.labelOption}
               >
                 {SAVE}
               </Button>

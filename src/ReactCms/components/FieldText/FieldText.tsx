@@ -1,7 +1,7 @@
 import React, { FC, ReactElement } from "react";
 import { FormikProps } from "formik";
 import { Form } from "react-bootstrap";
-import { TextLogField } from "../../../store/Log";
+import { FieldTextType } from "../../settings";
 import {
   ASTERISK,
   DEFAULT,
@@ -15,7 +15,7 @@ import {
 } from "../../../strings";
 
 export interface FieldTextProps extends FormikProps<{ [key: string]: string }> {
-  field: TextLogField;
+  field: FieldTextType;
 }
 
 export const FieldText: FC<FieldTextProps> = (props): ReactElement => {

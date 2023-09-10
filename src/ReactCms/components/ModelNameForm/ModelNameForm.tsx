@@ -3,9 +3,8 @@ import { Formik } from "formik";
 import * as yup from "yup";
 import { Form, Button, InputGroup } from "react-bootstrap";
 
-import { Log } from "../../../store/Log";
-
-import { OnUpdateLogParams } from "../../containers/Edit"; // todo - move into slice
+import { Model } from "../../settings";
+import { OnUpdateModelParams } from "../../containers/Edit"; // todo - move into slice
 
 import { EMPTY, PRIMARY, SAVE, SUBMIT, TEXT, TEXT_DANGER } from "../../../strings";
 
@@ -13,9 +12,9 @@ export const NAME = "name";
 
 export const NAME_IS_REQUIRED = "Name is required";
 export const NAME_IS_SPACES = "Name cannot be spaces";
-export const LOG_NAME = "Log Name";
+export const MODEL_NAME = "Model Name";
 
-export const LogNameFormValidationSchema = yup.object().shape({
+export const ModelNameFormValidationSchema = yup.object().shape({
   name: yup
     .string()
     .required(NAME_IS_REQUIRED)
@@ -26,30 +25,30 @@ export const LogNameFormValidationSchema = yup.object().shape({
     ),
 });
 
-export interface LogNameFormProps {
-  log: Log;
-  onSubmit: (params: OnUpdateLogParams) => void;
+export interface ModelNameFormProps {
+  model: Model;
+  onSubmit: (params: OnUpdateModelParams) => void;
 }
 
-export interface LogNameFormValues {
+export interface ModelNameFormValues {
   name: string;
 }
 
-export const LogNameForm: FC<LogNameFormProps> = ({
+export const ModelNameForm: FC<ModelNameFormProps> = ({
   onSubmit,
-  log,
+  model,
 }): ReactElement => {
   const initialValues = {
-    name: log.name || EMPTY,
-  } as LogNameFormValues;
+    name: model.name || EMPTY,
+  } as ModelNameFormValues;
 
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={(values: any) =>
-        onSubmit({ log, values, })
+        onSubmit({ model, values, })
       }
-      validationSchema={LogNameFormValidationSchema}
+      validationSchema={ModelNameFormValidationSchema}
     >
       {({
         values,
@@ -60,7 +59,7 @@ export const LogNameForm: FC<LogNameFormProps> = ({
         handleSubmit,
       }) => (
         <Form onSubmit={handleSubmit} className="edit__form_row">
-          <Form.Label htmlFor={"logNameFormInput"}>{LOG_NAME}</Form.Label>
+          <Form.Label htmlFor={"logNameFormInput"}>{MODEL_NAME}</Form.Label>
           <InputGroup>
             <Form.Control
               type={TEXT}
@@ -74,7 +73,7 @@ export const LogNameForm: FC<LogNameFormProps> = ({
               variant={PRIMARY}
               type={SUBMIT}
               disabled={
-                Object.keys(errors).length > 0 || values.name === log.name
+                Object.keys(errors).length > 0 || values.name === model.name
               }
             >
               {SAVE}
@@ -89,4 +88,4 @@ export const LogNameForm: FC<LogNameFormProps> = ({
   );
 };
 
-export default LogNameForm;
+export default ModelNameForm;

@@ -1,7 +1,7 @@
 import React, { FC, ReactElement } from "react";
 import { FormikProps } from "formik";
 import { Form } from "react-bootstrap";
-import { DateLogField } from "../../../store/Log";
+import { FieldDateType } from "../../settings";
 import {
   ASTERISK,
   DEFAULT,
@@ -12,7 +12,7 @@ import {
 } from "../../../strings";
 
 export interface FieldDateProps extends FormikProps<{ [key: string]: string }> {
-  field: DateLogField;
+  field: FieldDateType;
 }
 
 export const FieldDate: FC<FieldDateProps> = (props): ReactElement => {

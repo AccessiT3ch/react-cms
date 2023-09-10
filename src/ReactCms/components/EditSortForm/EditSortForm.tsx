@@ -2,9 +2,9 @@ import React, { FC, ReactElement } from "react";
 import { Formik } from "formik";
 import { InputGroup, Form, Button, Row, Col } from "react-bootstrap";
 
-import { Log, LogFields } from "../../../store/Log";
+import { Model, Field } from "../../settings";
 
-import { OnUpdateLogParams } from "../../containers/Edit"; // todo - move into slice
+import { OnUpdateModelParams } from "../../containers/Edit"; // todo - move into slice
 
 import {
   CREATED_AT,
@@ -24,25 +24,25 @@ export const SORT_ORDER = "Sort Order";
 export const DATE_CREATED = "Date Created";
 
 export interface EditSortFormProps {
-  log: Log;
-  onSubmit: (params: OnUpdateLogParams) => void;
+  model: Model;
+  onSubmit: (params: OnUpdateModelParams) => void;
 }
 
 export const EditSortForm: FC<EditSortFormProps> = ({
-  log,
+  model,
   onSubmit,
 }): ReactElement => {
-  const { fields } = log as Log;
+  const { fields } = model as Model;
   const initialValues = {
-    sort: log.sort || CREATED_AT,
-    order: log.order || SORT_DESC,
-  } as Log & { [key: string]: string };
-  const logFields: LogFields[] = Object.values(fields || {});
+    sort: model.sort || CREATED_AT,
+    order: model.order || SORT_DESC,
+  } as Model & { [key: string]: string };
+  const logFields: Field[] = Object.values(fields || {});
   return (
     <Formik
       initialValues={initialValues}
       onSubmit={(values: any) =>
-        onSubmit({ log, values, })
+        onSubmit({ model, values, })
       }
     >
       {(formikProps) => {
@@ -75,7 +75,7 @@ export const EditSortForm: FC<EditSortFormProps> = ({
                     id="sort-submit"
                     variant={PRIMARY}
                     type={SUBMIT}
-                    disabled={formikProps.values.sort === log.sort}
+                    disabled={formikProps.values.sort === model.sort}
                   >
                     {SAVE}
                   </Button>
@@ -97,7 +97,7 @@ export const EditSortForm: FC<EditSortFormProps> = ({
                     id="sort-order-submit"
                     variant={PRIMARY}
                     type={SUBMIT}
-                    disabled={formikProps.values.order === log.order}
+                    disabled={formikProps.values.order === model.order}
                   >
                     {SAVE}
                   </Button>

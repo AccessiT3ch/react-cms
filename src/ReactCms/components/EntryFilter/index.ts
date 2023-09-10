@@ -1,6 +1,6 @@
 export {
   // Component
-  LogEntryFilter,
+  EntryFilter,
 
   // Methods
   entryFilter,
@@ -43,5 +43,5 @@ export {
 export type {
   // Types
   EntryFilterQuery,
-  LogEntryFilterProps,
+  EntryFilterProps,
 } from "./EntryFilter";
