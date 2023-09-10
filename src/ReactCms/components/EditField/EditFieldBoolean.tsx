@@ -2,7 +2,7 @@ import React, { FC, ReactElement } from "react";
 import { Accordion, Col, Form, Row } from "react-bootstrap";
 import { FormikProps } from "formik";
 import { TypeOptionSelect } from "./TypeOptionSelect";
-import { TEXT, TEXT_DANGER, TEXT_MUTED } from "../../../strings";
+import { TEXT, TEXT_DANGER, TEXT_MUTED } from "../../settings/strings";
 
 // Magic Strings
 export const FALSELABEL = "falseLabel";

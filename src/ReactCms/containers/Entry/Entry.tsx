@@ -6,7 +6,7 @@ import { Formik } from "formik";
 
 import store from "../../../store/store";
 
-import { Model, Field, Entry, ValueTypes, FieldTextType, FieldSelectType, FieldNumberRangeType, FieldNumberType, FieldDateType, FieldBooleanType } from "../../settings";
+import { Model, Field, Entry as EntryType, ValueTypes, FieldTextType, FieldSelectType, FieldNumberRangeType, FieldNumberType, FieldDateType, FieldBooleanType } from "../../settings";
 import {addEntry, getEntry, updateEntry, getModel } from "../../reducer";
 
 import { Header } from "../../../App/components/Header";
@@ -22,9 +22,9 @@ import {
   BOOLEAN,
   CANCEL,
   DATE,
-  getEditLogURL,
+  getEditModelURL,
   HOME_URL,
-  LOG_NOT_FOUND,
+  MODEL_NOT_FOUND,
   NUMBER,
   OOPS,
   PRIMARY,
@@ -35,7 +35,7 @@ import {
   SUBMIT_STRING,
   TEXT,
   WARNING,
-} from "../../../strings";
+} from "../../settings";
 import "./Entry.scss";
 
 // Magic strings
@@ -54,7 +54,7 @@ export const ENTRY_NOT_UPDATED = "Entry not updated";
 export interface OnEntrySubmitParams {
   values: { [fieldId: string]: ValueTypes; label: string };
   model: Model;
-  entry: Entry;
+  entry: EntryType;
 }
 export const onEntrySubmit = async ({
   values,
@@ -66,7 +66,7 @@ export const onEntrySubmit = async ({
     ...values,
   };
 
-  const newEntry: Entry = {
+  const newEntry: EntryType = {
     ...entry,
     id: entryId,
     values: newValues,
@@ -74,40 +74,34 @@ export const onEntrySubmit = async ({
 
   await store.dispatch(
     (entry ? updateEntry : addEntry)({
-      logId: model.id,
+      modelId: model.id,
       entryId,
       entry: newEntry,
     })
   );
 };
 
-
-/**
- * Log Entry Page
- * @param {LogEntryProps} logEntryProps - props
- */
-
-export interface LogEntryProps {
+export interface EntryProps {
   setToast: SetToast;
 }
 
-export interface LogEntryValues {
+export interface EntryValues {
   [fieldId: string]: ValueTypes;
   label: string;
 }
 
-export const LogEntry: FC<LogEntryProps> = ({
+export const Entry: FC<EntryProps> = ({
   setToast,
 }): ReactElement | null => {
   const navigate = useNavigate();
 
-  // Get log and entry from store
+  // Get model and entry from store
   const { id: modelId, entry: entryId } = useParams() as {
     id: string;
     entry: string;
   };
   const model: Model = getModel(store.getState(), modelId);
-  const entry: Entry = getEntry(store.getState(),modelId, entryId);
+  const entry: EntryType = getEntry(store.getState(),modelId, entryId);
   const { name, fields, labelOption } = model || {};
   const fieldsArray: Field[] = Object.values(fields || {});
 
@@ -118,23 +112,23 @@ export const LogEntry: FC<LogEntryProps> = ({
   );
 
   React.useEffect(() => {
-    // If log doesn't exist, redirect to Home
+    // If model doesn't exist, redirect to Home
     if (!model) {
       navigate(HOME_URL);
       setToast({
         show: true,
         name: OOPS,
-        context: LOG_NOT_FOUND,
+        context: MODEL_NOT_FOUND,
         status: WARNING,
       });
     } else if (!fieldsArray.length) {
-      // If log doesn't have any fields, redirect to Edit page
+      // If model doesn't have any fields, redirect to Edit page
       setToast({
         show: true,
         content: `No fields found.`,
         status: WARNING,
       });
-      navigate(getEditLogURL(modelId));
+      navigate(getEditModelURL(modelId));
     }
   }, [model, modelId, navigate, fieldsArray.length]);
 
@@ -166,16 +160,6 @@ export const LogEntry: FC<LogEntryProps> = ({
           initialValues={initialValues}
           // todo: add validation
           onSubmit={(values) => {
-            // todo: Implement recurrence and reminders when there is a backend
-            // todo: Add checkbox to confirm setting the reminder on submit
-            // if (isNewEntry && log.recurrence?.enabled) {
-            //   notify({
-            //     title: `Log Reminder: ${log.name}`,
-            //     body: `You have a log entry for ${log.name} due today!`,
-            //     timestamp: getTimestamp(log.recurrence),
-            //     tag: log.id,
-            //   });
-            // }
             onEntrySubmit({ values, model, entry, });
             setToast({
               show: true,
@@ -192,7 +176,7 @@ export const LogEntry: FC<LogEntryProps> = ({
             return (
               <Form
                 onSubmit={formikProps.handleSubmit}
-                className="form__log_entry"
+                className="form__model_entry"
               >
                 <Row>
                   <Col>
@@ -269,4 +253,4 @@ export const LogEntry: FC<LogEntryProps> = ({
   );
 };
 
-export default LogEntry;
+export default Entry;

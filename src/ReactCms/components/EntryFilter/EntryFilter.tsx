@@ -14,7 +14,7 @@ import {
   SUBMIT,
   SUBMIT_STRING,
   TEXT,
-} from "../../../strings";
+} from "../../settings/strings";
 
 // Magic Strings
 export const INCLUDES = "includes";
@@ -179,10 +179,10 @@ export const EntryFilter: React.FC<EntryFilterProps> = ({
 
       {show && (
         <div
-          className={`log__entry_filter dropdown-menu${show ? " show" : EMPTY}`}
+          className={`model__entry_filter dropdown-menu${show ? " show" : EMPTY}`}
         >
           <Form
-            className="log__entry_filter__form"
+            className="model__entry_filter__form"
             onSubmit={(e) => {
               e.preventDefault();
               const filterQuery = [
@@ -195,13 +195,13 @@ export const EntryFilter: React.FC<EntryFilterProps> = ({
             {/* FILTER_BY SELECT */}
             <Form.Group
               controlId="formFilterField"
-              className="log__entry_filter__field"
+              className="model__entry_filter__field"
             >
               <Form.Label>{FILTER_BY_LABEL}</Form.Label>
               <Form.Control
                 name="filterBy"
                 as={SELECT}
-                className="log__entry_filter_field"
+                className="model__entry_filter_field"
                 required
                 defaultValue={filterBy}
                 onChange={(e) => {
@@ -237,12 +237,12 @@ export const EntryFilter: React.FC<EntryFilterProps> = ({
               <>
                 <Form.Group
                   controlId="formFilterOperator"
-                  className="log__entry_filter__operator"
+                  className="model__entry_filter__operator"
                 >
                   <Form.Label>{OPERATOR_LABEL}</Form.Label>
                   <Form.Select
                     name="operator"
-                    className="log__entry_filter_operator"
+                    className="model__entry_filter_operator"
                     onChange={(e) => setFieldOperator(e.target.value)}
                     defaultValue={fieldOperator}
                   >
@@ -270,13 +270,13 @@ export const EntryFilter: React.FC<EntryFilterProps> = ({
 
                 <Form.Group
                   controlId="formFilterValue"
-                  className="log__entry_filter__value"
+                  className="model__entry_filter__value"
                 >
                   <Form.Label>{VALUE_LABEL}</Form.Label>
                   <Form.Control
                     name="value"
                     type={(model.fields[filterBy] || {}).type || TEXT}
-                    className="log__entry_filter_value"
+                    className="model__entry_filter_value"
                     defaultValue={fieldValue}
                     required
                     onChange={(e) => setFieldValue(e.target.value)}
@@ -290,13 +290,13 @@ export const EntryFilter: React.FC<EntryFilterProps> = ({
               <>
                 <Form.Group
                   controlId="formFilterDateCreatedOperator"
-                  className="log__entry_filter__date_created_operator"
+                  className="model__entry_filter__date_created_operator"
                 >
                   <Form.Label>{OPERATOR_LABEL}</Form.Label>
                   <Form.Control
                     name="dateCreatedOperator"
                     as={SELECT}
-                    className="log__entry_filter_date_created_operator"
+                    className="model__entry_filter_date_created_operator"
                     defaultValue={fieldOperator}
                     onChange={(e) => setFieldOperator(e.target.value)}
                   >
@@ -307,16 +307,15 @@ export const EntryFilter: React.FC<EntryFilterProps> = ({
                 </Form.Group>
                 <Form.Group
                   controlId="formFilterDateCreated"
-                  className="log__entry_filter__dateCreated"
+                  className="model__entry_filter__dateCreated"
                 >
                   <Form.Label>{DATE_LABEL}</Form.Label>
                   <Form.Control
                     name={DATE_CREATED}
                     type={(model.fields[filterBy] || {}).option || DATETIME_LOCAL}
-                    className="log__entry_filter_dateCreated"
+                    className="model__entry_filter_dateCreated"
                     defaultValue={fieldValue}
                     onChange={(e) => {
-                      console.log(e.target.value);
                       setFieldValue(e.target.value);
                     }}
                   />
@@ -327,7 +326,7 @@ export const EntryFilter: React.FC<EntryFilterProps> = ({
             {/* SUBMIT & RESET BUTTONS */}
             <Form.Group
               controlId="formFilterResetSubmit"
-              className="log__entry_filter__reset_submit"
+              className="model__entry_filter__reset_submit"
             >
               <Button
                 type={RESET}

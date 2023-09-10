@@ -13,7 +13,7 @@ import {
   TEXT,
   TEXT_DANGER,
   TEXT_MUTED,
-} from "../../../strings";
+} from "../../settings/strings";
 
 export const NUMBER_FIELD_OPTIONS = "Number Field Options";
 export const MIN_VALUE = "Min Value";

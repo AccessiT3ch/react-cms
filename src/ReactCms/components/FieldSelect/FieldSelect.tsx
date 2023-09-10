@@ -10,7 +10,7 @@ import {
   MANY,
   TEXT_DANGER,
   TEXT_MUTED,
-} from "../../../strings";
+} from "../../settings/strings";
 
 export const SELECT_AN_OPTION = "Select an option";
 

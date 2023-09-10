@@ -3,7 +3,7 @@ import { act, render } from "@testing-library/react";
 import userEvent from '@testing-library/user-event'
 import { ModelNameForm, ModelNameFormProps, MODEL_NAME } from "./ModelNameForm";
 import { initialModelState } from "../../settings";
-import { SAVE, TEXT_DANGER } from "../../../strings";
+import { SAVE, TEXT_DANGER } from "../../settings/strings";
 
 test("renders without crashing", () => {
   const props: ModelNameFormProps = {

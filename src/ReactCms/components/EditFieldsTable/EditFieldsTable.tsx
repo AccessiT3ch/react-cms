@@ -13,7 +13,7 @@ import {
   TEXT_DANGER,
   TYPE_LABEL,
   TYPE_OPTION_LABEL,
-} from "../../../strings";
+} from "../../settings/strings";
 import { SetToast } from "../Toaster";
 
 export const YES = "Yes";

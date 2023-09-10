@@ -1,2 +1,2 @@
-import LogEntry from "./Entry";
-export { LogEntry };
+export { Entry } from "./Entry";
+

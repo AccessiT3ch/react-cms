@@ -1,5 +1,5 @@
-import { Model } from "./ReactCms/settings";
-import { GRANTED } from "./strings";
+import { Field, Model } from "./ReactCms/settings";
+import { GRANTED } from "./ReactCms/settings/strings";
 
 /**
  * Capitalize the first letter of a string
@@ -19,16 +19,16 @@ export const slugify = (text: string) => {
   return text && text.toString().toLowerCase().replace(/\s+/g, "-");
 };
 
-export interface logEntriesToCSVOptions {
+export interface entriesToCSVOptions {
   includeID?: boolean;
   includeCreatedAt?: boolean;
   includeUpdatedAt?: boolean;
   useIdsAsHeaders?: boolean;
 }
 
-export const logEntriesToCSV = (
+export const entriesToCSV = (
   model: Model,
-  options: logEntriesToCSVOptions = {
+  options: entriesToCSVOptions = {
     includeID: false,
     includeCreatedAt: false,
     includeUpdatedAt: false,
@@ -42,7 +42,7 @@ export const logEntriesToCSV = (
   if (includeCreatedAt) csv += "Created At,";
   if (includeUpdatedAt) csv += "Updated At,";
 
-  const fields = Object.values(model.fields);
+  const fields:Field[] = Object.values(model.fields);
   for (const field of fields) {
     csv += (useIdsAsHeaders ? field.id : field.name) + ",";
   }
@@ -63,7 +63,7 @@ export const logEntriesToCSV = (
   return csv;
 };
 
-export const logToMetaCSV = (model: Model) => {
+export const modelToMetaCSV = (model: Model) => {
   const headers = [
     "id",
     "name",
@@ -124,7 +124,7 @@ export const parseCSV = (csv: string): { [key: string]: any }[] => {
  * @param {string} csv - The CSV string
  * @param {string} filename - The filename
  */
-export const downloadCVS = (csv: string, filename: string = "log") => {
+export const downloadCVS = (csv: string, filename: string = "model") => {
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");

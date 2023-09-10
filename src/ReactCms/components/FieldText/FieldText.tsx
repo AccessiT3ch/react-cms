@@ -12,7 +12,7 @@ import {
   TEXTAREA,
   TEXT_DANGER,
   TEXT_MUTED,
-} from "../../../strings";
+} from "../../settings/strings";
 
 export interface FieldTextProps extends FormikProps<{ [key: string]: string }> {
   field: FieldTextType;

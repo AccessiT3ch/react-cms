@@ -44,7 +44,7 @@ import {
   TEXT_MUTED,
   TYPE,
   UPDATE_LABEL,
-} from "../../../strings";
+} from "../../settings/strings";
 
 export const NAME = "name";
 export const REQUIRED = "required";

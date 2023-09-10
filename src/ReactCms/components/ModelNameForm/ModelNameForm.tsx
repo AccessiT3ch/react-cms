@@ -6,7 +6,7 @@ import { Form, Button, InputGroup } from "react-bootstrap";
 import { Model } from "../../settings";
 import { OnUpdateModelParams } from "../../containers/Edit"; // todo - move into slice
 
-import { EMPTY, PRIMARY, SAVE, SUBMIT, TEXT, TEXT_DANGER } from "../../../strings";
+import { EMPTY, PRIMARY, SAVE, SUBMIT, TEXT, TEXT_DANGER } from "../../settings/strings";
 
 export const NAME = "name";
 

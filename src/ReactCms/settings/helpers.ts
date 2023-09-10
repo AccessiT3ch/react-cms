@@ -1,116 +1,26 @@
-/** ********** Type Definitions ********** */
+import {
+  CrudState,
+  Field,
+  FieldTextType,
+  FieldNumberType,
+  FieldNumberRangeType,
+  FieldBooleanType,
+  FieldSelectType,
+  FieldDateType,
+  Model,
+} from "./types";
 
-// Global Definitions
-export interface CrudState {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// Field Definitions
-export type ValueTypes =
-  | string
-  | number
-  | boolean
-  | [number, number]
-  | string[]
-  | undefined;
-
-export interface Field extends CrudState {
-  type: string;
-  required: boolean;
-  option?: string;
-  typeOptions?: string[];
-  typeOptionStrings?: string[];
-  defaultValue: ValueTypes;
-}
-
-export interface FieldTextType extends Field {
-  type: "text";
-  option: "text" | "textarea";
-  typeOptions: ["text", "textarea"];
-  typeOptionStrings: ["Single Line", "Multi Line"];
-  min: number;
-  max: number;
-}
-
-export interface FieldNumberType extends Field {
-  type: "number";
-  min: number;
-  max: number;
-  step: number;
-  typeOptions: ["number", "range"];
-  typeOptionStrings: ["Number Input", "Range Slider"];
-  option: "number" | "range";
-  unit: string;
-}
-
-export interface FieldNumberRangeType extends FieldNumberType {
-  name: "New Range Field",
-  option: "range",
-  defaultValue: [number, number],
-}
-
-export interface FieldBooleanType extends Field {
-  type: "boolean";
-  typeOptions: ["checkbox", "switch"],
-  typeOptionStrings: ["Checkbox", "Switch"],
-  trueLabel: string;
-  falseLabel: string;
-  defaultValue: boolean;
-}
-
-export interface FieldSelectType extends Field {
-  type: "select";
-  options: string;
-  option: "one" | "many";
-  typeOptions: ["one", "many"];
-  typeOptionStrings: ["Select One", "Select Many"];
-  defaultValue: string;
-}
-
-export interface FieldDateType extends Field {
-  type: "date";
-  option: "date" | "datetime-local" | "time";
-  typeOptions: ["date", "datetime-local", "time"];
-  typeOptionStrings: ["Date", "Date & Time", "Time"];
-}
-
-export type FieldTypes = FieldTextType | FieldNumberType | FieldNumberRangeType | FieldBooleanType | FieldSelectType | FieldDateType;
-
-export interface FieldState {
-  [fieldId: string]: FieldTypes;
-}
-
-// Entry Definitions
-export interface EntryValues {
-  label: string;
-  [fieldId: string]: ValueTypes;
-}
-export interface Entry extends CrudState {
-  values: EntryValues;
-}
-export interface EntryState {
-  [entryId: string]: Entry;
-}
-
-// Model Definitions
-export interface Model extends CrudState {
-  fields: FieldState;
-  entries: EntryState;
-  deletedFields: string[];
-  deletedEntries: string[];
-  sort?: string;
-  order?: "asc" | "desc";
-  labelOption?: "date" | "text" | string;
-}
-
-export interface ModelState {
-  [modelId: string]: Model;
-}
-
+import {
+  MODEL_URL,
+  EDIT_MODEL_URL,
+  EDIT_MODEL_FIELD_URL,
+  ADD_MODEL_FIELD_URL,
+  ADD_MODEL_ENTRY_URL,
+  EDIT_MODEL_ENTRY_URL,
+  MODEL_ID_URL_PARAM,
+  ENTRY_ID_URL_PARAM,
+  FIELD_URL_PARAM,
+} from "./strings";
 
 /** ********** Initial States ********** */
 
@@ -226,3 +136,23 @@ export const getNewFieldState = (type: string = "text"): Field => {
   }
   return newFieldState;
 };
+
+export const getModelUrl = (id: string) => MODEL_URL + id;
+
+export const getEditModelURL = (id: string): string =>
+  EDIT_MODEL_URL.replace(MODEL_ID_URL_PARAM, id);
+
+export const getEditFieldURL = (id: string, field: string): string =>
+  EDIT_MODEL_FIELD_URL.replace(MODEL_ID_URL_PARAM, id).replace(FIELD_URL_PARAM, field);
+
+export const getAddFieldURL = (id: string): string =>
+  ADD_MODEL_FIELD_URL.replace(MODEL_ID_URL_PARAM, id);
+
+export const getAddEntryURL = (id: string): string =>
+  ADD_MODEL_ENTRY_URL.replace(MODEL_ID_URL_PARAM, id);
+
+export const getEditEntryURL = (id: string, entry: string): string =>
+  EDIT_MODEL_ENTRY_URL.replace(MODEL_ID_URL_PARAM, id).replace(
+    ENTRY_ID_URL_PARAM,
+    entry
+  );

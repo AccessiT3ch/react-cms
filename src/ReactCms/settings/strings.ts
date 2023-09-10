@@ -69,8 +69,8 @@ export const DENIED = "denied";
 
 // Display Strings
 export const HOME = "Home";
-export const EDIT_LOG = "Edit Log";
-export const VIEW_LOG = "View Log";
+export const EDIT_MODEL = "Edit Model";
+export const VIEW_MODEL = "View Model";
 export const ADD_ENTRY = "Add Entry";
 export const EDIT_ENTRY = "Edit Entry";
 export const DELETE_ENTRY = "Delete Entry";
@@ -100,49 +100,26 @@ export const CREATE_LABEL = "Create";
 export const UPDATE_LABEL = "Update";
 export const ABOUT_APP_HEADER = "About the App";
 export const OOPS = "Oops!";
-export const LOG_NOT_FOUND = "Log not found";
+export const MODEL_NOT_FOUND = "Model not found";
 export const DATA = "Data";
 export const CSV = "CSV";
-export const SYNC_LOG = "Sync Log";
 
 // Route Strings
 export const WILDCARD = "*";
 export const HOME_URL = "/";
 export const NEW_URL = "/new";
-export const LOG_URL = "/log/";
-export const LOG_ID_URL_PARAM = ":id";
-export const LOG_ID_URL = LOG_ID_URL_PARAM;
+export const MODEL_URL = "/model/";
+export const MODEL_ID_URL_PARAM = ":id";
+export const MODEL_ID_URL = MODEL_ID_URL_PARAM;
 export const ENTRY_URL = "entry/";
 export const ENTRY_ID_URL_PARAM = ":entry";
 export const ENTRY_EDIT_URL = ENTRY_URL + ENTRY_ID_URL_PARAM;
 export const EDIT_URL = "edit/";
 export const FIELD_URL_PARAM = ":field";
 export const FIELD_URL = `field/${FIELD_URL_PARAM}`;
-export const EDIT_LOG_URL = LOG_URL + LOG_ID_URL_PARAM + "/edit";
-export const EDIT_LOG_FIELD_URL = EDIT_LOG_URL + "/" + FIELD_URL;
-export const ADD_LOG_FIELD_URL = EDIT_LOG_URL + "/field/new";
-export const ADD_LOG_ENTRY_URL = LOG_URL + LOG_ID_URL_PARAM + "/entry";
-export const EDIT_LOG_ENTRY_URL =
-  LOG_URL + LOG_ID_URL_PARAM + "/entry/" + ENTRY_ID_URL_PARAM;
-
-export const getLogUrl = (id: string) => {
-  return LOG_URL + id;
-};
-
-export const getEditLogURL = (id: string): string =>
-  EDIT_LOG_URL.replace(LOG_ID_URL_PARAM, id);
-
-export const getEditLogFieldURL = (id: string, field: string): string =>
-  EDIT_LOG_FIELD_URL.replace(LOG_ID_URL_PARAM, id).replace(FIELD_URL_PARAM, field);
-
-export const getAddLogFieldURL = (id: string): string =>
-  ADD_LOG_FIELD_URL.replace(LOG_ID_URL_PARAM, id);
-
-export const getAddLogEntryURL = (id: string): string =>
-  ADD_LOG_ENTRY_URL.replace(LOG_ID_URL_PARAM, id);
-
-export const getEditLogEntryURL = (id: string, entry: string): string =>
-  EDIT_LOG_ENTRY_URL.replace(LOG_ID_URL_PARAM, id).replace(
-    ENTRY_ID_URL_PARAM,
-    entry
-  );
+export const EDIT_MODEL_URL = MODEL_URL + MODEL_ID_URL_PARAM + "/edit";
+export const EDIT_MODEL_FIELD_URL = EDIT_MODEL_URL + "/" + FIELD_URL;
+export const ADD_MODEL_FIELD_URL = EDIT_MODEL_URL + "/field/new";
+export const ADD_MODEL_ENTRY_URL = MODEL_URL + MODEL_ID_URL_PARAM + "/entry";
+export const EDIT_MODEL_ENTRY_URL =
+  MODEL_URL + MODEL_ID_URL_PARAM + "/entry/" + ENTRY_ID_URL_PARAM;

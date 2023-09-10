@@ -7,7 +7,7 @@ import { PersistGate } from "reduxjs-toolkit-persist/integration/react";
 import { App } from "./App";
 import reportWebVitals from "./reportWebVitals";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
-import { FALSE } from "./strings";
+import { FALSE } from "./ReactCms/settings/strings";
 
 const ROOT: string = "root";
 const root: ReactDOM.Root = ReactDOM.createRoot(

@@ -1,5 +1,5 @@
 import { createSlice, Slice, SliceCaseReducers } from "@reduxjs/toolkit";
-import { Entry, EntryState, EntryValues, FieldState, FieldTypes, Model, ModelState, ValueTypes } from "./settings";
+import { Entry, EntryState, FieldState, FieldTypes, Model, ModelState, ValueTypes } from "./settings";
 import { useSelector } from "react-redux";
 
 // Name and Initial State
@@ -104,16 +104,16 @@ export const useModels = (): ModelState | undefined => {
   return useSelector((state: any) => state[modelSliceName]);
 };
 export const useModelsArray = (): Model[] | undefined => {
-  const logs = useModels();
-  return logs && (Object.values(logs) as Model[]);
+  const models = useModels();
+  return models && (Object.values(models) as Model[]);
 };
 export const useModel = (modelId: string): Model | undefined => {
-  const logs = useModels();
-  return logs && logs[modelId];
+  const models = useModels();
+  return models && models[modelId];
 };
 export const useEntries = (modelId: string): EntryState | undefined => {
-  const log = useModel(modelId);
-  return log && log.entries;
+  const model = useModel(modelId);
+  return model && model.entries;
 };
 export const useEntriesArray = (modelId: string): Entry[] | undefined => {
   const entries = useEntries(modelId);
@@ -128,8 +128,8 @@ export const useEntryValue = (modelId: string, entryId: string, fieldId: string)
   return entry && entry.values[fieldId];
 };
 export const useFields = (modelId: string): FieldState | undefined => {
-  const log = useModel(modelId);
-  return log && log.fields;
+  const model = useModel(modelId);
+  return model && model.fields;
 };
 export const useFieldsArray = (modelId: string): FieldTypes[] | undefined => {
   const fields = useFields(modelId);
@@ -143,13 +143,13 @@ export const useField = (modelId: string, fieldId: string): FieldTypes | undefin
 // Selectors
 export const getModels = (state: any):ModelState => state[modelSliceName] || {};
 export const getModelsArray = (state: any):Model[] => {
-  const logs = getModels(state);
-  return Object.values(logs);
+  const models = getModels(state);
+  return Object.values(models);
 }
 export const getModel = (state: any, modelId: string):Model => state[modelSliceName][modelId];
 export const getEntries = (state: any, modelId: string): EntryState => {
-  const log = getModel(state, modelId);
-  return log?.entries;
+  const model = getModel(state, modelId);
+  return model?.entries;
 }
 export const getEntriesArray = (state: any, modelId: string):Entry[] => {
   const entries = getEntries(state, modelId);
@@ -160,14 +160,14 @@ export const getEntry = (state: any, modelId: string, entryId: string):Entry => 
   return entries?.[entryId];
 }
 export const getFields = (state: any, modelId: string):FieldState => {
-  const log = getModel(state, modelId);
-  return log?.fields;
+  const model = getModel(state, modelId);
+  return model?.fields;
 }
-export const getLogFieldsArray = (state: any, modelId: string):FieldTypes[] => {
+export const getmodelFieldsArray = (state: any, modelId: string):FieldTypes[] => {
   const fields = getFields(state, modelId);
   return Object.values(fields);
 }
-export const getLogField = (state: any, modelId: string, fieldId: string):FieldTypes => {
+export const getmodelField = (state: any, modelId: string, fieldId: string):FieldTypes => {
   const fields = getFields(state, modelId);
   return fields?.[fieldId];
 }

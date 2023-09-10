@@ -3,7 +3,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { HashRouter } from "react-router-dom";
 import { Header } from "./Header";
-import { ABOUT_APP_HEADER } from "../../../strings";
+import { ABOUT_APP_HEADER } from "../../../ReactCms/settings/strings";
 
 const mockNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({

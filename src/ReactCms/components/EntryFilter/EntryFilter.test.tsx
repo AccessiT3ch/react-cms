@@ -2,9 +2,9 @@ import React from "react";
 import { act, render } from "@testing-library/react";
 import { initialModelState, initialFieldDateState, initialFieldNumberState, initialFieldTextState, initialCRUDState, Model } from "../../settings";
 import {} from "../../reducer";
-import { testModel } from "../../testData";
+import { testModel } from "../../settings/testData";
 import { DATE_CREATED, DATE_CREATED_LABEL, entryFilter, EQUALS, FILTER, FILTER_BY_LABEL, getIsFieldDate, getIsFieldEmpty, getIsFieldNumber, GREATER_THAN, INCLUDES, IS_AFTER, IS_BEFORE, LESS_THAN, EntryFilter, EntryFilterProps, NOT_EQUAL, NOT_INCLUDED } from "./EntryFilter";
-import { DATE, NUMBER } from "../../../strings";
+import { DATE, NUMBER } from "../../settings/strings";
 
 describe("EntryFilter", () => {
 test("renders without crashing", () => {
@@ -44,10 +44,10 @@ test("filter button toggles the filter dropdown on click", async () => {
     await act(() => button.click());
     const filterSelect = container.querySelector("select");
     expect(filterSelect).toBeInTheDocument();
-    const options = container.querySelectorAll(".log__entry_filter_field option");
+    const options = container.querySelectorAll(".model__entry_filter_field option");
     expect(options.length).toBe(Object.keys(testModel.fields).length + 1);
 
-    const operators = container.querySelectorAll(".log__entry_filter_operator option");
+    const operators = container.querySelectorAll(".model__entry_filter_operator option");
     expect(operators.length).toBe(4);
 
     const byDate = getByText(DATE_CREATED_LABEL);
@@ -58,7 +58,7 @@ test("filter button toggles the filter dropdown on click", async () => {
     // await act(() => filterSelect.click());
     // await act(() => byDate.click());
     // // expect(filterSelect.value).toBe(DATE_CREATED);
-    // const dateOperators = container.querySelectorAll(".log__entry_filter_operator option");
+    // const dateOperators = container.querySelectorAll(".model__entry_filter_operator option");
     // expect(dateOperators.length).toBe(3);
 
   });

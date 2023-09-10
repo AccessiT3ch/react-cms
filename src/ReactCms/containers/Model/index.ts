@@ -1,2 +1,1 @@
-import Log from "./Model";
-export { Log };
+export { Model } from "./Model";

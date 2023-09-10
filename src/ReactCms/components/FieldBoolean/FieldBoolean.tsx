@@ -9,7 +9,7 @@ import {
   SWITCH,
   TEXT_DANGER,
   TEXT_MUTED,
-} from "../../../strings";
+} from "../../settings/strings";
 import "./fieldBoolean.scss";
 
 export interface FieldBooleanProps

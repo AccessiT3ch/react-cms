@@ -1,6 +1,6 @@
 import React, { FC, ReactElement } from "react";
 import { Toast, ToastContainer } from "react-bootstrap";
-import { EMPTY, SUCCESS } from "../../../strings";
+import { EMPTY, SUCCESS } from "../../settings/strings";
 import "./toaster.scss";
 
 export type ToastTypes =

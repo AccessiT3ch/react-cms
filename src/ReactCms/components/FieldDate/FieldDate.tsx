@@ -9,7 +9,7 @@ import {
   NONE,
   TEXT_DANGER,
   TEXT_MUTED,
-} from "../../../strings";
+} from "../../settings/strings";
 
 export interface FieldDateProps extends FormikProps<{ [key: string]: string }> {
   field: FieldDateType;

@@ -2,10 +2,10 @@ import React, { FC, ReactElement } from "react";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import { Home } from "../ReactCms/containers/Home";
 import { Edit } from "../ReactCms/containers/Edit";
-import { Log } from "../ReactCms/containers/Model";
-import { LogEntry } from "../ReactCms/containers/Entry";
+import { Model } from "../ReactCms/containers/Model";
+import { Entry } from "../ReactCms/containers/Entry";
 import "./App.scss";
-import { EDIT_URL, EMPTY, ENTRY_EDIT_URL, ENTRY_URL, FIELD_URL, HOME_URL, LOG_ID_URL, LOG_URL, NEW_URL, SUCCESS, WILDCARD } from "../strings";
+import { EDIT_URL, EMPTY, ENTRY_EDIT_URL, ENTRY_URL, FIELD_URL, HOME_URL, MODEL_ID_URL, MODEL_URL, NEW_URL, SUCCESS, WILDCARD } from "../ReactCms/settings/strings";
 import { Toaster, ToastType } from "../ReactCms/components/Toaster";
 
 export const App: FC = (): ReactElement => {
@@ -24,14 +24,14 @@ export const App: FC = (): ReactElement => {
           <Route path={WILDCARD} element={<h1>404</h1>} />
           <Route path={HOME_URL} element={<Home setToast={setToast} />} />
           <Route path={NEW_URL} element={<Home setToast={setToast} />} />
-          <Route path={LOG_URL}>
+          <Route path={MODEL_URL}>
             <Route path={EMPTY} element={<h1>404</h1>} />
-            <Route path={LOG_ID_URL}>
-              <Route path={EMPTY} element={<Log setToast={setToast} />} />
-              <Route path={ENTRY_URL} element={<LogEntry setToast={setToast} />} />
+            <Route path={MODEL_ID_URL}>
+              <Route path={EMPTY} element={<Model setToast={setToast} />} />
+              <Route path={ENTRY_URL} element={<Entry setToast={setToast} />} />
               <Route
                 path={ENTRY_EDIT_URL}
-                element={<LogEntry setToast={setToast} />}
+                element={<Entry setToast={setToast} />}
               />
               <Route path={EDIT_URL}>
                 <Route path={EMPTY} element={<Edit setToast={setToast} />} />

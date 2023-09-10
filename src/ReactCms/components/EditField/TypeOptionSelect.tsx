@@ -2,7 +2,7 @@ import { FormikProps } from "formik";
 import React, { FC, ReactElement } from "react";
 import { Form } from "react-bootstrap";
 import { getNewFieldState } from "../../settings";
-import { SELECT, TEXT_DANGER, TEXT_MUTED } from "../../../strings";
+import { SELECT, TEXT_DANGER, TEXT_MUTED } from "../../settings/strings";
 import { capitalizeFirstLetter } from "../../../utils";
 
 export const OPTION = "option";

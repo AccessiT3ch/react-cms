@@ -1,12 +1,12 @@
 @import '../../styles.scss';
 
-.log__container {
+.model__container {
   align-items: flex-start;
 
-  .log__entry {
+  .model__entry {
     margin-bottom: $spacer;
 
-    .log__entry__actions {
+    .model__entry__actions {
       position: absolute;
       top: $spacer;
       right: $spacer;
@@ -14,7 +14,7 @@
   }
 }
 
-.log__entries_header {
+.model__entries_header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -26,7 +26,7 @@
     gap: $spacer;
     position: relative;
 
-    .log__entry_filter {
+    .model__entry_filter {
       position: absolute;
       background-color: white;
       z-index: 5;

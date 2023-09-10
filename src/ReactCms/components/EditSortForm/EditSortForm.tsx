@@ -17,7 +17,7 @@ import {
   SORT_ASC,
   SORT_DESC,
   SUBMIT,
-} from "../../../strings";
+} from "../../settings/strings";
 
 export const SORT_BY = "Sort By";
 export const SORT_ORDER = "Sort Order";
@@ -37,7 +37,7 @@ export const EditSortForm: FC<EditSortFormProps> = ({
     sort: model.sort || CREATED_AT,
     order: model.order || SORT_DESC,
   } as Model & { [key: string]: string };
-  const logFields: Field[] = Object.values(fields || {});
+  const fieldsArray: Field[] = Object.values(fields || {});
   return (
     <Formik
       initialValues={initialValues}
@@ -61,7 +61,7 @@ export const EditSortForm: FC<EditSortFormProps> = ({
                   >
                     <option value={CREATED_AT}>{DATE_CREATED}</option>
                     <optgroup label={FIELDS}>
-                      {logFields.map((field) => (
+                      {fieldsArray.map((field) => (
                         <option
                           key={`sort-options-${field.id}`}
                           value={field.id}

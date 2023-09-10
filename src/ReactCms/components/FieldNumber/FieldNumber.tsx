@@ -9,7 +9,7 @@ import {
   RANGE,
   TEXT_DANGER,
   TEXT_MUTED,
-} from "../../../strings";
+} from "../../settings/strings";
 
 export const VALUE = "Value: ";
 export const MIN = "Min: ";

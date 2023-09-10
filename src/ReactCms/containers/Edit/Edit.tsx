@@ -25,11 +25,11 @@ import {
   DARK,
   EDIT,
   EMPTY,
-  getAddLogEntryURL,
-  getAddLogFieldURL,
-  getEditLogFieldURL,
-  getEditLogURL,
-  getLogUrl,
+  getAddEntryURL,
+  getAddFieldURL,
+  getEditFieldURL,
+  getEditModelURL,
+  getModelUrl,
   HOME,
   HOME_URL,
   MODAL,
@@ -37,15 +37,15 @@ import {
   PRIMARY,
   SECONDARY,
   SUBMIT,
-  VIEW_LOG,
-} from "../../../strings";
+  VIEW_MODEL,
+} from "../../settings";
 
 export const EDIT_HEADER = "Edit: ";
-export const LOG_FIELDS = "Log Fields";
+export const MODEL_FIELDS = "Fields";
 export const NO_FIELDS_YET = "No fields yet.";
 export const ADD_NEW_FIELD = "Add a new field...";
-export const LOG_SETTINGS = "Log Settings";
-export const DELETE_LOG = "Delete Log";
+export const MODEL_SETTINGS = "Model Settings";
+export const DELETE_MODEL = "Delete Model";
 export const FIELD_SETTINGS = "Field Settings";
 
 export interface OnUpdateModelParams {
@@ -112,7 +112,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
   // Reset modal to initial state
   const resetModal = () => {
     setShowModal(false);
-    navigate(getEditLogURL(id));
+    navigate(getEditModelURL(id));
     setModalMode(ADD);
     setFieldId(EMPTY);
   };
@@ -121,18 +121,17 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
     _: React.MouseEvent<HTMLElement, MouseEvent>,
     field: Field
   ) => {
-    navigate(getEditLogFieldURL(id, field.id));
+    navigate(getEditFieldURL(id, field.id));
     setShowModal(true);
     setModalMode(EDIT);
     setFieldId(field.id);
   };
 
   const onAddField = () => {
-    navigate(getAddLogFieldURL(id));
+    navigate(getAddFieldURL(id));
     setShowModal(true);
     setModalMode(ADD);
     setFieldId(EMPTY);
-    // todo: sync log fields
   };
 
   const fields: Field[] = Object.values(model.fields);
@@ -151,13 +150,13 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
         <Accordion
           alwaysOpen
           flush
-          className="accordion__log_settings"
+          className="accordion__MODEL_settings"
           defaultActiveKey={["0"]}
         >
-          {/* LOG FIELDS TABLE */}
+          {/* MODELS FIELDS TABLE */}
           <Accordion.Item eventKey="0">
             <Accordion.Header>
-              <h2>{LOG_FIELDS}</h2>
+              <h2>{MODEL_FIELDS}</h2>
             </Accordion.Header>
             <Accordion.Body>
               {fields && fields.length ? (
@@ -185,10 +184,10 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
             </Accordion.Body>
           </Accordion.Item>
 
-          {/* LOG SETTINGS */}
+          {/* MODEL SETTINGS */}
           <Accordion.Item eventKey="1">
             <Accordion.Header>
-              <h2>{LOG_SETTINGS}</h2>
+              <h2>{MODEL_SETTINGS}</h2>
             </Accordion.Header>
             <Accordion.Body>
               <ModelNameForm onSubmit={onUpdateModel} model={model} />
@@ -199,9 +198,6 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
               <hr /> */}
               <br />
               <EditLabelForm model={model} onSubmit={onUpdateModel} />
-              {/* todo: Implement recurrence and reminders when there is a backend
-              <br />
-              <EditRecurrenceForm log={log} onSubmit={onUpdateLog} /> */}
             </Accordion.Body>
           </Accordion.Item>
           <Accordion.Item eventKey="2">
@@ -223,7 +219,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
                   navigate(HOME_URL);
                 }}
               >
-                {DELETE_LOG}
+                {DELETE_MODEL}
               </Button>
             </Accordion.Body>
           </Accordion.Item>
@@ -238,15 +234,15 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
           <Col>
             <Button
               variant={SECONDARY}
-              onClick={() => navigate(getLogUrl(model.id))}
+              onClick={() => navigate(getModelUrl(model.id))}
             >
-              {VIEW_LOG}
+              {VIEW_MODEL}
             </Button>
           </Col>
           <Col>
             <Button
               variant={PRIMARY}
-              onClick={() => navigate(getAddLogEntryURL(model.id))}
+              onClick={() => navigate(getAddEntryURL(model.id))}
             >
               {ADD_ENTRY}
             </Button>

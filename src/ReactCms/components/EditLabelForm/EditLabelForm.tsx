@@ -16,7 +16,7 @@ import {
   SUBMIT,
   TEXT,
   TEXT_LABEL,
-} from "../../../strings";
+} from "../../settings/strings";
 
 export const ENTRY_LABEL = "Entry Label";
 

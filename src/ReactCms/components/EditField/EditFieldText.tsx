@@ -12,7 +12,7 @@ import {
   TEXT,
   TEXT_DANGER,
   TEXT_MUTED,
-} from "../../../strings";
+} from "../../settings/strings";
 
 export const TEXT_FIELD_OPTIONS = "Text Field Options";
 export const MIN_LENGTH = "Min Length";

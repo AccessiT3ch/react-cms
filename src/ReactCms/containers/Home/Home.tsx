@@ -16,8 +16,8 @@ import {
   ADD_ENTRY,
   CANCEL,
   EMPTY,
-  getAddLogEntryURL,
-  getEditLogURL,
+  getAddEntryURL,
+  getEditModelURL,
   HOME_URL,
   NEW_URL,
   PRIMARY,
@@ -25,7 +25,7 @@ import {
   SECONDARY,
   TEXT,
   TEXT_DANGER,
-} from "../../../strings";
+} from "../../settings";
 import { SetToast } from "../../components/Toaster";
 
 export const REACT_CMS = "React CMS";
@@ -75,7 +75,7 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
     newModelName !== EMPTY &&
     newModelName.trim() !== EMPTY
   ) {
-    navigate(getEditLogURL(newModelId));
+    navigate(getEditModelURL(newModelId));
   }
 
   return (
@@ -105,7 +105,7 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
                   // todo: extract to component
                   <tr key={model.id}>
                     <td>
-                      <Link to={`/log/${model.id}`}>{model.name}</Link>
+                      <Link to={`/model/${model.id}`}>{model.name}</Link>
                     </td>
                     <td>
                       <Dropdown
@@ -115,7 +115,7 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
                       >
                         <Button
                           variant={PRIMARY}
-                          onClick={() => navigate(getAddLogEntryURL(model.id))}
+                          onClick={() => navigate(getAddEntryURL(model.id))}
                         >
                           {ADD_ENTRY}
                         </Button>
@@ -128,7 +128,7 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
 
                         <Dropdown.Menu>
                           <Dropdown.Item
-                            onClick={() => navigate(getEditLogURL(model.id))}
+                            onClick={() => navigate(getEditModelURL(model.id))}
                           >
                             {EDIT}
                           </Dropdown.Item>
@@ -169,7 +169,7 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
 
       {/* todo: extract to component */}
       <Modal
-        id="addLogModal"
+        id="addModelModal"
         show={showModal}
         onHide={() => {
           setShowModal(false);
@@ -219,7 +219,7 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
                       name: newModelName,
                     });
                     setNewModelId(newId);
-                    navigate(getEditLogURL(newId));
+                    navigate(getEditModelURL(newId));
 
                     setToast({
                       show: true,

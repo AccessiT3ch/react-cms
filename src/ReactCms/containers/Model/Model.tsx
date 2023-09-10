@@ -31,10 +31,10 @@ import {
   DATE,
   DELETE_ENTRY,
   EDIT_ENTRY,
-  EDIT_LOG,
-  getAddLogEntryURL,
-  getEditLogEntryURL,
-  getEditLogURL,
+  EDIT_MODEL,
+  getAddEntryURL,
+  getEditEntryURL,
+  getEditModelURL,
   HOME,
   HOME_URL,
   HYPHEN,
@@ -46,7 +46,7 @@ import {
   SORT_DESC,
   TEXT,
   WARNING,
-} from "../../../strings";
+} from "../../settings";
 import { SetToast, ToastType } from "../../components/Toaster";
 import { entryFilter, EntryFilter } from "../../components/EntryFilter";
 
@@ -76,7 +76,7 @@ export interface ModelProps {
 export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
   const navigate = useNavigate();
 
-  // Get log from store
+  // Get model from store
   const { id } = useParams() as { id: string };
   const model: ModelType = getModel(store.getState(), id);
   const { name, fields, labelOption, sort, order } = model || {};
@@ -115,7 +115,7 @@ export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
   const isLabelText = labelOption === TEXT;
 
   return (
-    <Container className="log__container">
+    <Container className="model__container">
       <Row>
         <Col>
           <Header title={name} />
@@ -124,19 +124,19 @@ export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
       <hr />
 
       <Row>
-        <Col className="log__entries_header">
+        <Col className="model__entries_header">
           <h4>
             {ENTRIES_HEADER}
             {`(${entries.length})`}
           </h4>
 
-          <div className="log__entries_header__actions">
+          <div className="model__entries_header__actions">
             {/* Sort by dropdown */}
             <DropdownButton
               id="dropdown-basic-button"
               title={SORT_BY}
               variant={SECONDARY}
-              className="log__actions"
+              className="model__actions"
             >
               <Dropdown.Item
                 onClick={() => {
@@ -177,7 +177,7 @@ export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
       </Row>
 
       <Row>
-        <Col className="log__entries">
+        <Col className="model__entries">
           {hasEntries ? (
             entries
               // todo: extract sort logic to helpers
@@ -220,7 +220,7 @@ export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
                     : entry.values[labelOption as string];
 
                 return (
-                  <Card key={id + HYPHEN + entry.id} className="log__entry">
+                  <Card key={id + HYPHEN + entry.id} className="model__entry">
                     <Card.Body>
                       <Card.Title>{labelText}</Card.Title>
 
@@ -249,7 +249,7 @@ export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
                           return (
                             <div
                               key={id + HYPHEN + entry.id + HYPHEN + fieldId}
-                              className="log__entry__field"
+                              className="model__entry__field"
                             >
                               <strong>{fields[fieldId].name}</strong>:
                               {` ${value}`}
@@ -260,11 +260,11 @@ export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
                         id={`dropdown-basic-button-${id}-${entry.id}`}
                         title={ACTIONS}
                         variant={SECONDARY}
-                        className="log__entry__actions"
+                        className="model__entry__actions"
                       >
                         <Dropdown.Item
                           onClick={() =>
-                            navigate(getEditLogEntryURL(id, entry.id))
+                            navigate(getEditEntryURL(id, entry.id))
                           }
                         >
                           {EDIT_ENTRY}
@@ -310,16 +310,16 @@ export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
           <Button
             variant={SECONDARY}
             onClick={() => {
-              navigate(getEditLogURL(id));
+              navigate(getEditModelURL(id));
             }}
           >
-            {EDIT_LOG}
+            {EDIT_MODEL}
           </Button>
         </Col>
         <Col>
           <Button
             variant={PRIMARY}
-            onClick={() => navigate(getAddLogEntryURL(id))}
+            onClick={() => navigate(getAddEntryURL(id))}
           >
             {ADD_ENTRY}
           </Button>
