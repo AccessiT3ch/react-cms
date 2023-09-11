@@ -4,7 +4,7 @@ import { Accordion, Button, Col, Modal, Row } from "react-bootstrap";
 import Container from "react-bootstrap/Container";
 
 import store from "../../../store/store";
-import { Model, Field } from "../../settings";
+import { Model, Field, ContainerProps, getHomeURL } from "../../settings";
 import { getModel, updateModel, removeModel, removeField } from "../../reducer";
 
 import { ModelNameForm } from "../../components/ModelNameForm";
@@ -13,7 +13,6 @@ import { EditFieldForm } from "../../components/EditField";
 import { EditLabelForm } from "../../components/EditLabelForm";
 import { Header } from "../../../App/components/Header";
 
-import { SetToast } from "../../components/Toaster";
 import { EditSortForm } from "../../components/EditSortForm";
 
 import "./Edit.scss";
@@ -31,7 +30,6 @@ import {
   getEditModelURL,
   getModelUrl,
   HOME,
-  HOME_URL,
   MODAL,
   NEW,
   PRIMARY,
@@ -80,11 +78,7 @@ export const onDeleteField = async ({
   await store.dispatch(removeField({ modelId: model.id, fieldId }));
 };
 
-export interface EditProps {
-  setToast: SetToast;
-}
-
-export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
+export const Edit: FC<ContainerProps> = ({ setToast, basename = "" }): ReactElement => {
   const navigate = useNavigate();
 
   // Get Model and Field ids from URL
@@ -95,7 +89,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
 
   // If model is not found, redirect to home
   if (!model || id !== model.id || !model.fields) {
-    navigate(HOME_URL);
+    navigate(getHomeURL(basename));
   }
 
   // Modal states
@@ -112,7 +106,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
   // Reset modal to initial state
   const resetModal = () => {
     setShowModal(false);
-    navigate(getEditModelURL(id));
+    navigate(getEditModelURL(id, basename));
     setModalMode(ADD);
     setFieldId(EMPTY);
   };
@@ -121,14 +115,14 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
     _: React.MouseEvent<HTMLElement, MouseEvent>,
     field: Field
   ) => {
-    navigate(getEditFieldURL(id, field.id));
+    navigate(getEditFieldURL(id, field.id, basename));
     setShowModal(true);
     setModalMode(EDIT);
     setFieldId(field.id);
   };
 
   const onAddField = () => {
-    navigate(getAddFieldURL(id));
+    navigate(getAddFieldURL(id, basename));
     setShowModal(true);
     setModalMode(ADD);
     setFieldId(EMPTY);
@@ -210,13 +204,15 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
                 type={SUBMIT}
                 onClick={(e) => {
                   e.preventDefault();
-                  setToast({
-                    show: true,
-                    content: `Model deleted`,
-                    name: model.name,
-                  });
+                  if (setToast) {
+                    setToast({
+                      show: true,
+                      content: `Model deleted`,
+                      name: model.name,
+                    });
+                  }
                   onDeleteModel(model);
-                  navigate(HOME_URL);
+                  navigate(getHomeURL(basename));
                 }}
               >
                 {DELETE_MODEL}
@@ -227,14 +223,14 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
 
         <Row className="form__button_row">
           <Col>
-            <Button variant={DARK} onClick={() => navigate(HOME_URL)}>
+            <Button variant={DARK} onClick={() => navigate(getHomeURL(basename))}>
               {HOME}
             </Button>
           </Col>
           <Col>
             <Button
               variant={SECONDARY}
-              onClick={() => navigate(getModelUrl(model.id))}
+              onClick={() => navigate(getModelUrl(model.id, basename))}
             >
               {VIEW_MODEL}
             </Button>
@@ -242,7 +238,7 @@ export const Edit: FC<EditProps> = ({ setToast }): ReactElement => {
           <Col>
             <Button
               variant={PRIMARY}
-              onClick={() => navigate(getAddEntryURL(model.id))}
+              onClick={() => navigate(getAddEntryURL(model.id, basename))}
             >
               {ADD_ENTRY}
             </Button>

@@ -6,7 +6,7 @@ import { Formik } from "formik";
 
 import store from "../../../store/store";
 
-import { Model, Field, Entry as EntryType, ValueTypes, FieldTextType, FieldSelectType, FieldNumberRangeType, FieldNumberType, FieldDateType, FieldBooleanType } from "../../settings";
+import { Model, Field, Entry as EntryType, ValueTypes, FieldTextType, FieldSelectType, FieldNumberRangeType, FieldNumberType, FieldDateType, FieldBooleanType, ContainerProps, getHomeURL } from "../../settings";
 import {addEntry, getEntry, updateEntry, getModel } from "../../reducer";
 
 import { Header } from "../../../App/components/Header";
@@ -15,15 +15,12 @@ import { FieldNumber } from "../../components/FieldNumber";
 import { FieldDate } from "../../components/FieldDate";
 import { FieldBoolean } from "../../components/FieldBoolean";
 import { FieldSelect } from "../../components/FieldSelect";
-import { SetToast } from "../../components/Toaster";
 
-// import { getTimestamp, notify } from "../../utils";
 import {
   BOOLEAN,
   CANCEL,
   DATE,
   getEditModelURL,
-  HOME_URL,
   MODEL_NOT_FOUND,
   NUMBER,
   OOPS,
@@ -81,17 +78,14 @@ export const onEntrySubmit = async ({
   );
 };
 
-export interface EntryProps {
-  setToast: SetToast;
-}
-
 export interface EntryValues {
   [fieldId: string]: ValueTypes;
   label: string;
 }
 
-export const Entry: FC<EntryProps> = ({
+export const Entry: FC<ContainerProps> = ({
   setToast,
+  basename = "",
 }): ReactElement | null => {
   const navigate = useNavigate();
 
@@ -114,20 +108,24 @@ export const Entry: FC<EntryProps> = ({
   React.useEffect(() => {
     // If model doesn't exist, redirect to Home
     if (!model) {
-      navigate(HOME_URL);
-      setToast({
+      navigate(getHomeURL(basename));
+      if (setToast) {
+        setToast({
         show: true,
         name: OOPS,
         context: MODEL_NOT_FOUND,
         status: WARNING,
       });
+    }
     } else if (!fieldsArray.length) {
       // If model doesn't have any fields, redirect to Edit page
-      setToast({
+      if (setToast) {
+        setToast({
         show: true,
         content: `No fields found.`,
         status: WARNING,
       });
+    }
       navigate(getEditModelURL(modelId));
     }
   }, [model, modelId, navigate, fieldsArray.length]);
@@ -161,14 +159,16 @@ export const Entry: FC<EntryProps> = ({
           // todo: add validation
           onSubmit={(values) => {
             onEntrySubmit({ values, model, entry, });
-            setToast({
-              show: true,
-              name: model.name,
-              content: isNewEntry
-                ? `New entry added`
-                : `Entry updated`,
-            });
             setCancel(true);
+            if (setToast) {
+                setToast({
+                show: true,
+                name: model.name,
+                content: isNewEntry
+                  ? `New entry added`
+                  : `Entry updated`,
+              })
+            }
           }}
         >
           {(formikProps) => {
@@ -225,14 +225,16 @@ export const Entry: FC<EntryProps> = ({
                       type={RESET}
                       onClick={() => {
                         setCancel(true);
-                        setToast({
-                          show: true,
-                          name: model.name,
-                          context: isNewEntry
-                            ? `Entry not saved`
-                            : `Entry not updated`,
-                          status: SECONDARY,
-                        });
+                        if (setToast) {
+                          setToast({
+                            show: true,
+                            name: model.name,
+                            context: isNewEntry
+                              ? `Entry not saved`
+                              : `Entry not updated`,
+                            status: SECONDARY,
+                          });
+                        }
                       }}
                     >
                       {CANCEL}

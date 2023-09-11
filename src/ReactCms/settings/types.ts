@@ -1,5 +1,7 @@
 /** ********** Type Definitions ********** */
 
+import { SetToast } from "../components/Toaster";
+
 // Global Definitions
 export interface CrudState {
     id: string;
@@ -8,6 +10,12 @@ export interface CrudState {
     createdAt: string;
     updatedAt: string;
   }
+
+export interface ContainerProps {
+  setToast?: SetToast;
+  basename?: string;
+  path?: string;
+}
   
   // Field Definitions
   export type ValueTypes =

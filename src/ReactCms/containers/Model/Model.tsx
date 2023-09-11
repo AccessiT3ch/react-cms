@@ -20,6 +20,8 @@ import {
 import {
   Model as ModelType,
   Entry,
+  ContainerProps,
+  getHomeURL,
 } from "../../settings";
 import "./Model.scss";
 import {
@@ -36,7 +38,6 @@ import {
   getEditEntryURL,
   getEditModelURL,
   HOME,
-  HOME_URL,
   HYPHEN,
   OOPS,
   PRIMARY,
@@ -47,7 +48,7 @@ import {
   TEXT,
   WARNING,
 } from "../../settings";
-import { SetToast, ToastType } from "../../components/Toaster";
+import { ToastType } from "../../components/Toaster";
 import { entryFilter, EntryFilter } from "../../components/EntryFilter";
 
 // Display strings
@@ -69,11 +70,7 @@ export const onDeleteEntry = async ({
   await store.dispatch(removeEntry({ modelId: model.id, entryId }));
 };
 
-export interface ModelProps {
-  setToast: SetToast;
-}
-
-export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
+export const Model: FC<ContainerProps> = ({ setToast, basename = "" }): ReactElement => {
   const navigate = useNavigate();
 
   // Get model from store
@@ -101,13 +98,15 @@ export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
   // Navigate to home if model not found
   React.useEffect(() => {
     if (!model) {
-      navigate(HOME_URL);
-      setToast({
-        show: true,
-        name: OOPS,
-        context: "Model not found",
-        status: WARNING,
-      });
+      navigate(getHomeURL(basename));
+      if (setToast) {
+        setToast({
+          show: true,
+          name: OOPS,
+          context: "Model not found",
+          status: WARNING,
+        });
+      }
     }
   }, [model, navigate]);
 
@@ -275,10 +274,12 @@ export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
                               model,
                               entryId: entry.id,
                             });
-                            setToast({
-                              show: true,
-                              content: `Entry deleted`,
-                            } as ToastType);
+                            if (setToast) {
+                                setToast({
+                                show: true,
+                                content: `Entry deleted`,
+                              } as ToastType);
+                            }
                           }}
                         >
                           {DELETE_ENTRY}
@@ -300,7 +301,7 @@ export const Model: FC<ModelProps> = ({ setToast }): ReactElement => {
           <Button
             variant={DARK}
             onClick={() => {
-              navigate(HOME_URL);
+              navigate(getHomeURL(basename));
             }}
           >
             {HOME}

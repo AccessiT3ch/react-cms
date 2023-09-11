@@ -30,7 +30,7 @@ export interface EditFieldsTableProps {
   fields: Field[];
   onEditClick: EditFieldClickFunction;
   onDeleteClick: DeleteFieldClickFunction;
-  setToast: SetToast;
+  setToast?: SetToast;
 }
 
 export const EditFieldsTable: FC<EditFieldsTableProps> = ({
@@ -84,11 +84,13 @@ export const EditFieldsTable: FC<EditFieldsTableProps> = ({
                     onClick={(e) => {
                       e.preventDefault();
                       onDeleteClick(e, field.id);
-                      setToast({
+                      if (setToast) {
+                        setToast({
                         show: true,
                         content: `Field deleted.`,
                         name: field.name,
                       });
+                    }
                     }}
                   >
                     {DELETE}

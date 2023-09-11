@@ -137,22 +137,24 @@ export const getNewFieldState = (type: string = "text"): Field => {
   return newFieldState;
 };
 
-export const getModelUrl = (id: string) => MODEL_URL + id;
+export const getHomeURL = (basename: string = ""): string => basename + "/";
 
-export const getEditModelURL = (id: string): string =>
-  EDIT_MODEL_URL.replace(MODEL_ID_URL_PARAM, id);
+export const getModelUrl = (id: string, basename:string = "") => basename + MODEL_URL + id;
 
-export const getEditFieldURL = (id: string, field: string): string =>
-  EDIT_MODEL_FIELD_URL.replace(MODEL_ID_URL_PARAM, id).replace(FIELD_URL_PARAM, field);
+export const getEditModelURL = (id: string, basename: string = ""): string =>
+  basename + EDIT_MODEL_URL.replace(MODEL_ID_URL_PARAM, id);
 
-export const getAddFieldURL = (id: string): string =>
-  ADD_MODEL_FIELD_URL.replace(MODEL_ID_URL_PARAM, id);
+export const getEditFieldURL = (id: string, field: string, basename = ""): string =>
+  basename + EDIT_MODEL_FIELD_URL.replace(MODEL_ID_URL_PARAM, id).replace(FIELD_URL_PARAM, field);
 
-export const getAddEntryURL = (id: string): string =>
-  ADD_MODEL_ENTRY_URL.replace(MODEL_ID_URL_PARAM, id);
+export const getAddFieldURL = (id: string, basename = ""): string =>
+  basename + ADD_MODEL_FIELD_URL.replace(MODEL_ID_URL_PARAM, id);
 
-export const getEditEntryURL = (id: string, entry: string): string =>
-  EDIT_MODEL_ENTRY_URL.replace(MODEL_ID_URL_PARAM, id).replace(
+export const getAddEntryURL = (id: string, basename = ""): string =>
+  basename + ADD_MODEL_ENTRY_URL.replace(MODEL_ID_URL_PARAM, id);
+
+export const getEditEntryURL = (id: string, entry: string, basename = ""): string =>
+  basename + EDIT_MODEL_ENTRY_URL.replace(MODEL_ID_URL_PARAM, id).replace(
     ENTRY_ID_URL_PARAM,
     entry
   );

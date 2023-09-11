@@ -5,7 +5,7 @@ import Col from "react-bootstrap/Col";
 import "./Home.scss";
 import { Button, ButtonGroup, Dropdown, Form, Modal } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import { initialModelState } from "../../settings";
+import { ContainerProps, getHomeURL, initialModelState } from "../../settings";
 import { addModel, removeModel, getModelsArray } from "../../reducer";
 import { v4 as uuidv4 } from "uuid";
 
@@ -18,7 +18,6 @@ import {
   EMPTY,
   getAddEntryURL,
   getEditModelURL,
-  HOME_URL,
   NEW_URL,
   PRIMARY,
   SAVE,
@@ -26,7 +25,6 @@ import {
   TEXT,
   TEXT_DANGER,
 } from "../../settings";
-import { SetToast } from "../../components/Toaster";
 
 export const REACT_CMS = "React CMS";
 export const MODELS_LABEL = "Models";
@@ -57,11 +55,7 @@ export const onAddModel = async ({
   store.dispatch(addModel({ model }));
 };
 
-export interface HomeProps {
-  setToast: SetToast;
-}
-
-export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
+export const Home: FC<ContainerProps> = ({ setToast, basename = "" }): ReactElement => {
   const navigate = useNavigate();
 
   const isNewModelModalOpen = window.location.hash === "#/new";
@@ -105,7 +99,7 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
                   // todo: extract to component
                   <tr key={model.id}>
                     <td>
-                      <Link to={`/model/${model.id}`}>{model.name}</Link>
+                      <Link to={`${basename}/model/${model.id}`}>{model.name}</Link>
                     </td>
                     <td>
                       <Dropdown
@@ -137,10 +131,12 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
                             onClick={(e) => {
                               e.preventDefault();
                               store.dispatch(removeModel({ modelId: model.id }));
-                              setToast({
-                                show: true,
-                                content: `Model "${model.name}" deleted.`,
-                              });
+                              if (setToast) {
+                                setToast({
+                                  show: true,
+                                  content: `Model "${model.name}" deleted.`,
+                                });
+                              }
                             }}
                           >
                             {DELETE}
@@ -174,7 +170,7 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
         onHide={() => {
           setShowModal(false);
           setNewModelName(EMPTY);
-          navigate(HOME_URL);
+          navigate(getHomeURL(basename));
         }}
       >
         <Modal.Header closeButton>
@@ -202,7 +198,7 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
                   onClick={() => {
                     setShowModal(false);
                     setNewModelName(EMPTY);
-                    navigate(HOME_URL);
+                    navigate(getHomeURL(basename));
                   }}
                 >
                   {CANCEL}
@@ -220,11 +216,12 @@ export const Home: FC<HomeProps> = ({ setToast }): ReactElement => {
                     });
                     setNewModelId(newId);
                     navigate(getEditModelURL(newId));
-
-                    setToast({
-                      show: true,
-                      content: `Model "${newModelName}" created.`
-                    });
+                    if (setToast) {
+                      setToast({
+                        show: true,
+                        content: `Model "${newModelName}" created.`
+                      });
+                    }
                   }}
                 >
                   {SAVE}

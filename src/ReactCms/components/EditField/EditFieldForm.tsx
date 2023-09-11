@@ -93,7 +93,7 @@ export interface EditFieldFormProps {
   fieldId: string | undefined;
   modalMode: string;
   resetModal: () => void;
-  setToast: SetToast;
+  setToast?: SetToast;
 }
 export interface EditFieldFormValues {
   [key: string]: any;
@@ -128,12 +128,14 @@ export const EditFieldForm: FC<EditFieldFormProps> = ({
           values,
           model,
           field: fieldState as Field,
-        });
-        setToast({
-          show: true,
-          context: isNewField ? "Field Created." : "Field Updated.",
-          name: model.name,
-        });
+        });        
+        if (setToast) {
+          setToast({
+            show: true,
+            context: isNewField ? "Field Created." : "Field Updated.",
+            name: model.name,
+          });
+        }
 
         resetModal();
       }}

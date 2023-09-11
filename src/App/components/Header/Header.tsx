@@ -35,6 +35,7 @@ export const Header: FC<HeaderProps> = ({
         />
       </a>
       <h1>{title}</h1>
+      <div />
     </header>
   );
 };
