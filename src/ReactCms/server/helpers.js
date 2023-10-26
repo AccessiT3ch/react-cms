@@ -43,10 +43,14 @@ export const readFile = (path) => {
 // helper function to call fs.writeFile as a promise
 export const writeFile = (path, data) => {
   return new Promise((resolve, reject) => {
-    fs.writeFile(path, typeof data === 'string' ? data : JSON.stringify(data), (err) => {
-      if (err) reject(err);
-      else resolve(data);
-    });
+    fs.writeFile(
+      path,
+      typeof data === "string" ? data : JSON.stringify(data),
+      (err) => {
+        if (err) reject(err);
+        else resolve(data);
+      }
+    );
   });
 };
 
