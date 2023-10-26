@@ -1,7 +1,7 @@
 {
   "name": "@accessitech/react-json-cms",
   "version": "0.1.0",
-  "description": "A lightweight express server to edit local JSON files.",
+  "description": "A lightweight front and backend to edit local JSON files.",
   "main": "server/index.js",
   "type": "module",
   "author": "",
