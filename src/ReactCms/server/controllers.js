@@ -9,7 +9,7 @@ import * as fs from "fs";
 import {
   consoleError,
   getJsonPath,
-  readFile,ß
+  readFile,
   uuid,
   writeFile,
 } from "./helpers.js";
