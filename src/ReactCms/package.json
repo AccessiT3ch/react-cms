@@ -2,7 +2,7 @@
   "name": "@accessitech/react-json-cms",
   "version": "0.1.0",
   "description": "A lightweight front and backend to edit local JSON files.",
-  "main": "server/index.js",
+  "main": "server/index.ts",
   "type": "module",
   "author": "",
   "license": "ISC",

@@ -27,6 +27,7 @@ export interface ContainerProps {
     | undefined;
   
   export interface Field extends CrudState {
+    model: string;
     type: string;
     required: boolean;
     option?: string;
@@ -98,6 +99,7 @@ export interface ContainerProps {
     [fieldId: string]: ValueTypes;
   }
   export interface Entry extends CrudState {
+    model: string;
     values: EntryValues;
   }
   export interface EntryState {
@@ -106,8 +108,8 @@ export interface ContainerProps {
   
   // Model Definitions
   export interface Model extends CrudState {
-    fields: FieldState;
-    entries: EntryState;
+    fields: string[];
+    entries: string[];
     deletedFields: string[];
     deletedEntries: string[];
     sort?: string;

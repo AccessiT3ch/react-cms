@@ -7,45 +7,41 @@ import * as path from "path";
 import * as fs from "fs";
 
 import {
+  Obj,
   consoleError,
   getJsonPath,
   readFile,
   uuid,
   writeFile,
 } from "./helpers.js";
+import { Request, Response } from "express";
+import { Entry, Field, Model } from "../settings/types.js";
 
 /** MODEL CONTROLLERS */
 
 // get all the models
-export const getModels = async (req, res) => {
+export const getModels = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the model json filenames from the models.json file
-  const models = await readFile(`${jsonPath}/models.json`).catch(consoleError);
+  const models:string[] = await readFile(`${jsonPath}/models.json`).catch(consoleError);
   if (!models) return res.status(404).send("Model Manifest Not Found");
 
   // get the models from the model json files
-  const modelData = await Promise.all(
+  const modelData:Model[] | void = await Promise.all(
     models.map((model) => readFile(`${jsonPath}/model_${model}.json`))
   ).catch(consoleError);
-
-  const modelDataById = modelData?.reduce((acc, cur) => {
-    acc[cur.id] = cur;
-    return acc;
-  }, {});
-  if (!modelDataById || !Object.keys(modelDataById).length)
-    return res.status(404).send("Model Data Not Found");
 
   // send the models
   res.send(modelData);
 };
 
 // get a single model
-export const getModel = async (req, res) => {
+export const getModel = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
   const { modelId } = req.params;
   // get the model from the model json file
-  const model = await readFile(`${jsonPath}/model_${modelId}.json`).catch(
+  const model: Model = await readFile(`${jsonPath}/model_${modelId}.json`).catch(
     consoleError
   );
   if (!model) return res.status(404).send("Model Not Found");
@@ -55,26 +51,26 @@ export const getModel = async (req, res) => {
 };
 
 // create a model
-export const createModel = async (req, res) => {
+export const createModel = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the model from the request body
-  const model = req.body;
+  const model: Model = req.body;
   if (!model) return res.status(400).send("Model Not Provided");
   if (!model.id) model.id = uuid(model.name);
 
   // get the model manifest
-  const models = await readFile(`${jsonPath}/models.json`).catch(consoleError);
+  const models: string[] = await readFile(`${jsonPath}/models.json`).catch(consoleError);
   if (!models) return res.status(404).send("Model Manifest Not Found");
 
   // write the model to the model json file
-  const newFile = await writeFile(
+  const newFile:Model = await writeFile(
     `${jsonPath}/model_${model.id}.json`,
     model
   ).catch(consoleError);
   if (!newFile) return res.status(500).send("Error Writing Model");
 
-  const newModel = await readFile(`${jsonPath}/model_${model.id}.json`).catch(
+  const newModel:Model = await readFile(`${jsonPath}/model_${model.id}.json`).catch(
     consoleError
   );
   if (!newModel) return res.status(500).send("Error Writing Model");
@@ -92,28 +88,28 @@ export const createModel = async (req, res) => {
 };
 
 // update a model
-export const updateModel = async (req, res) => {
+export const updateModel = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the model from the request body
-  const model = req.body;
+  const model:Model = req.body;
   if (!model) return res.status(400).send("Model Not Provided");
   if (!model.id) return res.status(400).send("Model ID Not Provided");
   if (model.id !== req.params.modelId)
     return res.status(400).send("Model ID Mismatch");
 
   // get the model manifest
-  const models = await readFile(`${jsonPath}/models.json`).catch(consoleError);
+  const models:string[] = await readFile(`${jsonPath}/models.json`).catch(consoleError);
   if (!models) return res.status(404).send("Model Manifest Not Found");
 
   // write the model to the model json file
-  const newFile = await writeFile(
+  const newFile:Model = await writeFile(
     `${jsonPath}/model_${model.id}.json`,
     model
   ).catch(consoleError);
   if (!newFile) return res.status(500).send("Error Writing Model");
 
-  const newModel = await readFile(`${jsonPath}/model_${model.id}.json`).catch(
+  const newModel:Model = await readFile(`${jsonPath}/model_${model.id}.json`).catch(
     consoleError
   );
   if (!newModel) return res.status(500).send("Error Reading New Model");
@@ -123,21 +119,23 @@ export const updateModel = async (req, res) => {
 };
 
 // delete a model
-export const deleteModel = async (req, res) => {
+export const deleteModel = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
-
+  const { modelId } = req.params;
   // get the model manifest
-  const models = await readFile(`${jsonPath}/models.json`).catch(consoleError);
+  const models: string[] = await readFile(`${jsonPath}/models.json`).catch(consoleError);
   if (!models) return res.status(404).send("Model Manifest Not Found");
 
   // remove the model from the model manifest
-  const newModels = models.filter((model) => model !== req.params.modelId);
+  const newModels: string[] = models.filter(
+    (model: string) => model !== modelId
+  );
 
   // write the model manifest to the model manifest json file
   writeFile(`${jsonPath}/models.json`, newModels)
     .then(() => {
       // delete the model json file
-      fs.unlink(`${jsonPath}/model_${req.params.modelId}.json`, (err) => {
+      fs.unlink(`${jsonPath}/model_${modelId}.json`, (err) => {
         if (err) {
           console.log(err);
           return res.status(500).send("Error Deleting Model");
@@ -156,36 +154,31 @@ export const deleteModel = async (req, res) => {
 /** FIELD CONTROLLERS */
 
 // get all the fields
-export const getFields = async (req, res) => {
+export const getFields = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the field json filenames from the fields.json file
-  const fields = await readFile(`${jsonPath}/fields.json`).catch(consoleError);
+  const fields:string[] = await readFile(`${jsonPath}/fields.json`).catch(consoleError);
   if (!fields) return res.status(404).send("Field Manifest Not Found");
 
   // get the fields from the field json files
-  const fieldData = await Promise.all(
-    fields.map((field) => readFile(`${jsonPath}/field_${field}.json`))
+  const fieldData: Field[] | void = await Promise.all(
+    fields.map((field: string) => readFile(`${jsonPath}/field_${field}.json`))
   ).catch(consoleError);
-
-  const fieldDataById = fieldData?.reduce((acc, cur) => {
-    acc[cur.id] = cur;
-    return acc;
-  }, {});
-  if (!fieldDataById || !Object.keys(fieldDataById).length)
-    return res.status(404).send("Field Data Not Found");
+  if (!fieldData)
+    return res.status(404).send("Field(s) Data Not Found");
 
   // send the fields
   res.send(fieldData);
 };
 
 // get a single field
-export const getField = async (req, res) => {
+export const getField = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
   const { fieldId } = req.params;
 
   // get the field from the field json file
-  const field = await readFile(`${jsonPath}/field_${fieldId}.json`).catch(
+  const field:Field = await readFile(`${jsonPath}/field_${fieldId}.json`).catch(
     consoleError
   );
   if (!field) return res.status(404).send("Field Not Found");
@@ -195,68 +188,76 @@ export const getField = async (req, res) => {
 };
 
 // get all fields by model
-export const getFieldsByModel = async (req, res) => {
+export const getFieldsByModel = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the model from the request
-  const modelId = req.params.modelId;
+  const { modelId } = req.params;
   if (!modelId) return res.status(400).send("Model Not Provided");
 
   // get the model from the model json file
-  const modelData = await readFile(`${jsonPath}/model_${modelId}.json`);
+  const modelData: Model = await readFile(`${jsonPath}/model_${modelId}.json`);
   if (!modelData) return res.status(404).send("Model Not Found");
+  if (!modelData.fields) return res.status(404).send("Model Has No Fields");
 
   // get the fields from the field json files
-  const fieldData = await Promise.all(
-    modelData.fields.map((field) => readFile(`${jsonPath}/field_${field}.json`))
+  const fieldData: Field[] | void = await Promise.all(
+    modelData.fields.map((field: string) =>
+      readFile(`${jsonPath}/field_${field}.json`)
+    )
   ).catch(consoleError);
+  if (!fieldData) return res.status(404).send("Field(s) Data Not Found");
 
   // send the fields
   res.send(fieldData);
 };
 
 // create a field
-export const createField = async (req, res) => {
+export const createField = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the field from the request body
-  const field = req.body;
+  const field:Field = req.body;
   if (!field) return res.status(400).send("Field Not Provided");
   if (!field.model) return res.status(400).send("Field Model Not Provided");
   if (!field.id) field.id = uuid(field.model);
 
   // get the model file
-  const model = await readFile(`${jsonPath}/model_${field.model}.json`).catch(
-    consoleError
-  );
+  const model: Model = await readFile(
+    `${jsonPath}/model_${field.model}.json`
+  ).catch(consoleError);
   if (!model) return res.status(404).send("Model Not Found");
+  if (!model.fields) model.fields = [];
   if (model.fields.includes(field.id))
     return res.status(400).send("Field ID Already Exists");
 
   // get the field manifest
-  const fields = await readFile(`${jsonPath}/fields.json`).catch(consoleError);
+  const fields: string[] = await readFile(`${jsonPath}/fields.json`).catch(
+    consoleError
+  );
   if (!fields) return res.status(404).send("Field Manifest Not Found");
 
   // write the field to the field json file
-  const newFile = await writeFile(
+  const newFile: Field = await writeFile(
     `${jsonPath}/field_${field.id}.json`,
     field
   ).catch(consoleError);
   if (!newFile) return res.status(500).send("Error Writing Field");
 
   // read the field from the field json file
-  const newField = await readFile(`${jsonPath}/field_${field.id}.json`).catch(
-    consoleError
-  );
+  const newField: Field = await readFile(
+    `${jsonPath}/field_${field.id}.json`
+  ).catch(consoleError);
   if (!newField) return res.status(500).send("Error Reading New Field");
 
   // add the field to the field manifest
   fields.push(field.id);
 
   // write the field manifest to the field manifest json file
-  const newManifest = await writeFile(`${jsonPath}/fields.json`, fields).catch(
-    consoleError
-  );
+  const newManifest: string[] = await writeFile(
+    `${jsonPath}/fields.json`,
+    fields
+  ).catch(consoleError);
   if (!newManifest) return res.status(500).send("Error Writing Field Manifest");
 
   // add the field to the model
@@ -264,7 +265,7 @@ export const createField = async (req, res) => {
   model.fields.push(field.id);
 
   // write the model to the model json file
-  const newModel = await writeFile(
+  const newModel: Model = await writeFile(
     `${jsonPath}/model_${model.id}.json`,
     model
   ).catch(consoleError);
@@ -274,28 +275,28 @@ export const createField = async (req, res) => {
 };
 
 // update a field
-export const updateField = async (req, res) => {
+export const updateField = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the field from the request body
-  const field = req.body;
+  const field: Field = req.body;
   if (!field) return res.status(400).send("Field Not Provided");
   if (!field.id) return res.status(400).send("Field ID Not Provided");
   if (field.id !== req.params.fieldId)
     return res.status(400).send("Field ID Mismatch");
 
   // get the field manifest
-  const fields = await readFile(`${jsonPath}/fields.json`).catch(consoleError);
+  const fields: string[] = await readFile(`${jsonPath}/fields.json`).catch(consoleError);
   if (!fields) return res.status(404).send("Field Manifest Not Found");
 
   // write the field to the field json file
-  const newFile = await writeFile(
+  const newFile: Field = await writeFile(
     `${jsonPath}/field_${field.id}.json`,
     field
   ).catch(consoleError);
   if (!newFile) return res.status(500).send("Error Writing Field");
 
-  const newField = await readFile(`${jsonPath}/field_${field.id}.json`).catch(
+  const newField: Field = await readFile(`${jsonPath}/field_${field.id}.json`).catch(
     consoleError
   );
   if (!newField) return res.status(500).send("Error Reading New Field");
@@ -305,38 +306,40 @@ export const updateField = async (req, res) => {
 };
 
 // delete a field
-export const deleteField = async (req, res) => {
+export const deleteField = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
   const { fieldId } = req.params;
 
   // get the field manifest
-  const fields = await readFile(`${jsonPath}/fields.json`).catch(consoleError);
+  const fields: string[] = await readFile(`${jsonPath}/fields.json`).catch(
+    consoleError
+  );
   if (!fields) return res.status(404).send("Field Manifest Not Found");
 
   // get the associated field json file
-  const oldField = await readFile(`${jsonPath}/field_${fieldId}.json`).catch(
-    consoleError
-  );
+  const oldField: Field = await readFile(
+    `${jsonPath}/field_${fieldId}.json`
+  ).catch(consoleError);
   if (!oldField) return res.status(404).send("Field Not Found");
 
   // get the associated model json file
-  const model = await readFile(
+  const model: Model = await readFile(
     `${jsonPath}/model_${oldField.model}.json`
   ).catch(consoleError);
   if (!model) return res.status(404).send("Model Not Found");
   model.fields = model.fields.filter((field) => field !== fieldId);
 
   // remove the field from the field manifest
-  const newFields = fields.filter((field) => field !== fieldId);
+  const newFields: string[] = fields.filter((field) => field !== fieldId);
 
   // write the field manifest to the field manifest json file
-  const newManifest = await writeFile(
+  const newManifest: string[] = await writeFile(
     `${jsonPath}/fields.json`,
     newFields
   ).catch(consoleError);
   if (!newManifest) return res.status(500).send("Error Writing Field Manifest");
 
-  const newModel = await writeFile(
+  const newModel: Model = await writeFile(
     `${jsonPath}/model_${model.id}.json`,
     model
   ).catch(consoleError);
@@ -357,47 +360,42 @@ export const deleteField = async (req, res) => {
 /** ENTRY CONTROLLERS */
 
 // get all the entries
-export const getEntries = async (req, res) => {
+export const getEntries = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the entry json filenames from the entries.json file
-  const entries = await readFile(path.join(jsonPath, "entries.json")).catch(
-    consoleError
-  );
+  const entries: string[] = await readFile(
+    path.join(jsonPath, "entries.json")
+  ).catch(consoleError);
   if (!entries) return res.status(404).send("Entry Manifest Not Found");
 
   // get the entries from the entry json files
-  const entryData = await Promise.all(
+  const entryData: Entry[] | void = await Promise.all(
     entries.map(async (entry) => readFile(`${jsonPath}/entry_${entry}.json`))
   ).catch(consoleError);
-
-  const entryDataById = entryData?.reduce((acc, cur) => {
-    acc[cur.id] = cur;
-    return acc;
-  }, {});
-  if (!entryDataById || !Object.keys(entryDataById).length)
-    return res.status(404).send("Entry Data Not Found");
+  if (!entryData) return res.status(404).send("Entry Data Not Found");
 
   // send the entries
   res.send(entryData);
 };
 
 // get a single entry
-export const getEntry = async (req, res) => {
+export const getEntry = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
   const { entryId } = req.params;
 
   // get the entry from the entry json file
-  const entry = await readFile(`${jsonPath}/entry_${entryId}.json`).catch(
-    consoleError
-  );
+  const entry: Entry = await readFile(
+    `${jsonPath}/entry_${entryId}.json`
+  ).catch(consoleError);
+  if (!entry) return res.status(404).send("Entry Not Found");
 
   // send the entry
   res.send(entry);
 };
 
 // get all entries by model
-export const getEntriesByModel = async (req, res) => {
+export const getEntriesByModel = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the model from the request
@@ -405,66 +403,60 @@ export const getEntriesByModel = async (req, res) => {
   if (!modelId) return res.status(400).send("Model Not Provided");
 
   // get the model from the model json file
-  const model = await readFile(`${jsonPath}/model_${modelId}.json`).catch(
-    consoleError
-  );
+  const model: Model = await readFile(
+    `${jsonPath}/model_${modelId}.json`
+  ).catch(consoleError);
   if (!model) return res.status(404).send("Model Not Found");
 
   // get the entries from the entry json files
-  const entryData = await Promise.all(
+  const entryData: Entry[] | void = await Promise.all(
     model.entries.map((entry) => readFile(`${jsonPath}/entry_${entry}.json`))
   ).catch(consoleError);
-
-  const entryDataById = entryData?.reduce((acc, cur) => {
-    acc[cur.id] = cur;
-    return acc;
-  }, {});
-  if (!entryDataById || !Object.keys(entryDataById).length)
-    return res.status(404).send("Entry Data Not Found");
+  if (!entryData) return res.status(404).send("Entry Data Not Found");
 
   // send the entries
   res.send(entryData);
 };
 
 // create an entry
-export const createEntry = async (req, res) => {
+export const createEntry = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the entry from the request body
-  const entry = req.body;
+  const entry: Entry = req.body;
   if (!entry) return res.status(400).send("Entry Not Provided");
   if (!entry.model) return res.status(400).send("Entry Model Not Provided");
   if (!entry.id) entry.id = uuid(entry.model);
 
   // get the entry manifest
-  const entries = await readFile(`${jsonPath}/entries.json`).catch(
+  const entries: string[] = await readFile(`${jsonPath}/entries.json`).catch(
     consoleError
   );
   if (!entries) return res.status(404).send("Entry Manifest Not Found");
 
   // get the model file
-  const model = await readFile(`${jsonPath}/model_${entry.model}.json`).catch(
-    consoleError
-  );
+  const model: Model = await readFile(
+    `${jsonPath}/model_${entry.model}.json`
+  ).catch(consoleError);
   if (!model) return res.status(404).send("Model Not Found");
 
   // write the entry to the entry json file
-  const newFile = await writeFile(
+  const newFile: Entry = await writeFile(
     `${jsonPath}/entry_${entry.id}.json`,
     entry
   ).catch(consoleError);
   if (!newFile) return res.status(500).send("Error Writing Entry");
 
-  const newEntry = await readFile(`${jsonPath}/entry_${entry.id}.json`).catch(
-    consoleError
-  );
+  const newEntry: Entry = await readFile(
+    `${jsonPath}/entry_${entry.id}.json`
+  ).catch(consoleError);
   if (!newEntry) return res.status(500).send("Error Reading New Entry");
 
   // add the entry to the entry manifest
   entries.push(entry.id);
 
   // write the entry manifest to the entry manifest json file
-  const newManifest = await writeFile(
+  const newManifest: string[] = await writeFile(
     `${jsonPath}/entries.json`,
     entries
   ).catch(consoleError);
@@ -484,32 +476,32 @@ export const createEntry = async (req, res) => {
 };
 
 // update an entry
-export const updateEntry = async (req, res) => {
+export const updateEntry = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the entry from the request body
-  const entry = req.body;
+  const entry: Entry = req.body;
   if (!entry) return res.status(400).send("Entry Not Provided");
   if (!entry.id) return res.status(400).send("Entry ID Not Provided");
   if (entry.id !== req.params.entryId)
     return res.status(400).send("Entry ID Mismatch");
 
   // get the entry manifest
-  const entries = await readFile(`${jsonPath}/entries.json`).catch(
+  const entries: string[] = await readFile(`${jsonPath}/entries.json`).catch(
     consoleError
   );
   if (!entries) return res.status(404).send("Entry Manifest Not Found");
 
   // write the entry to the entry json file
-  const newFile = await writeFile(
+  const newFile: Entry = await writeFile(
     `${jsonPath}/entry_${entry.id}.json`,
     entry
   ).catch(consoleError);
   if (!newFile) return res.status(500).send("Error Writing Entry");
 
-  const newEntry = await readFile(`${jsonPath}/entry_${entry.id}.json`).catch(
-    consoleError
-  );
+  const newEntry: Entry = await readFile(
+    `${jsonPath}/entry_${entry.id}.json`
+  ).catch(consoleError);
   if (!newEntry) return res.status(500).send("Error Reading New Entry");
 
   // send the entry
@@ -517,36 +509,36 @@ export const updateEntry = async (req, res) => {
 };
 
 // delete an entry
-export const deleteEntry = async (req, res) => {
+export const deleteEntry = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
   const { entryId } = req.params;
   // get the entry manifest
-  const entries = await readFile(`${jsonPath}/entries.json`).catch(
+  const entries:string[] = await readFile(`${jsonPath}/entries.json`).catch(
     consoleError
   );
   if (!entries) return res.status(404).send("Entry Manifest Not Found");
 
   // get the associated entry json file
-  const oldEntry = await readFile(`${jsonPath}/entry_${entryId}.json`).catch(
+  const oldEntry:Entry = await readFile(`${jsonPath}/entry_${entryId}.json`).catch(
     consoleError
   );
   if (!oldEntry) return res.status(404).send("Entry Not Found");
 
   // get the associated model json file
-  const model = await readFile(
+  const model:Model = await readFile(
     `${jsonPath}/model_${oldEntry.model}.json`
   ).catch(consoleError);
   if (!model) return res.status(404).send("Model Not Found");
   model.entries = model.entries.filter((entry) => entry !== entryId);
 
-  const newModel = await writeFile(
+  const newModel:Model = await writeFile(
     `${jsonPath}/model_${model.id}.json`,
     model
   ).catch(consoleError);
   if (!newModel) return res.status(500).send("Error Writing Model");
 
   // remove the entry from the entry manifest
-  const newEntries = entries.filter((entry) => entry !== entryId);
+  const newEntries:string[] = entries.filter((entry) => entry !== entryId);
 
   // write the entry manifest to the entry manifest json file
   writeFile(`${jsonPath}/entries.json`, newEntries)
