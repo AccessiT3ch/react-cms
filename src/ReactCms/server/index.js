@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import controllers from './controllers.js';
+import { parseJSON } from './helpers.js';
 
 // create the express app
 const app = express();
@@ -40,7 +41,7 @@ fs.readFile(path.join(jsonPath, 'models.json'), (err, data) => {
       }
     });
   } else {
-    console.log(`models.json exists with ${JSON.parse(data.toString()).length} models`);
+    console.log(`models.json exists with ${parseJSON(data).length} models`);
   }
 });
 
@@ -55,7 +56,7 @@ fs.readFile(path.join(jsonPath, 'fields.json'), (err, data) => {
       }
     });
   } else {
-    console.log(`fields.json exists with ${JSON.parse(data.toString()).length} fields`);
+    console.log(`fields.json exists with ${parseJSON(data).length} fields`);
   }
 });
 
@@ -70,7 +71,7 @@ fs.readFile(path.join(jsonPath, 'entries.json'), (err, data) => {
       }
     });
   } else {
-    console.log(`entries.json exists with ${JSON.parse(data.toString()).length} entries`);
+    console.log(`entries.json exists with ${parseJSON(data).length} entries`);
   }
 });
 
@@ -78,26 +79,26 @@ fs.readFile(path.join(jsonPath, 'entries.json'), (err, data) => {
 
 // CRUD routes for models
 app.get('/api/models', controllers.getModels);
-app.get('/api/models/:model', controllers.getModel);
-app.post('/api/models/:model', controllers.createModel);
-app.put('/api/models/:model/:id', controllers.updateModel);
-app.delete('/api/models/:model/:id', controllers.deleteModel);
+app.get('/api/models/:modelId', controllers.getModel);
+app.post('/api/models', controllers.createModel);
+app.put('/api/models/:modelId', controllers.updateModel);
+app.delete('/api/models/:modelId', controllers.deleteModel);
 
 // CRUD routes for fields
 app.get('/api/fields', controllers.getFields);
-app.get('/api/fields/model/:model', controllers.getFieldsByModel);
-app.get('/api/fields/:id', controllers.getField);
+app.get('/api/fields/model/:modelId', controllers.getFieldsByModel);
+app.get("/api/fields/:fieldId", controllers.getField);
 app.post('/api/fields', controllers.createField);
-app.put('/api/fields/:field', controllers.updateField);
-app.delete('/api/fields/:id', controllers.deleteField);
+app.put('/api/fields/:fieldId', controllers.updateField);
+app.delete("/api/fields/:fieldId", controllers.deleteField);
 
 // CRUD routes for entries
 app.get('/api/entries', controllers.getEntries);
-app.get('/api/entries/model/:model', controllers.getEntriesByModel);
-app.get('/api/entries/:id', controllers.getEntry);
+app.get('/api/entries/model/:modelId', controllers.getEntriesByModel);
+app.get('/api/entries/:entryId', controllers.getEntry);
 app.post('/api/entries', controllers.createEntry);
-app.put('/api/entries/:id', controllers.updateEntry);
-app.delete('/api/entries/:id', controllers.deleteEntry);
+app.put('/api/entries/:entryId', controllers.updateEntry);
+app.delete('/api/entries/:entryId', controllers.deleteEntry);
 
 export default app;
 
