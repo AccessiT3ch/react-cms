@@ -12,6 +12,7 @@ export interface ReactCmsRouteProps {
   path?: string;
 }
 
+export const BASENAME = "/react-cms";
 export const HOME_URL = "/";
 export const NEW_URL = "/new";
 export const MODEL_URL = "/model";
@@ -24,7 +25,7 @@ export const EDIT_FIELD_URL = "/model/:id/edit/:fieldId";
 // Home Route
 export const getHomeRoute = (
   { setToast,
-    basename = "",
+    basename = BASENAME,
     path = HOME_URL,
   }: ReactCmsRouteProps
 ) => <Route path={basename + path} element={<Home setToast={setToast} basename={basename} />} />;
@@ -32,21 +33,21 @@ export const getHomeRoute = (
 // Model Routes
 export const getNewModelRoute = ({
   setToast,
-  basename = "",
+  basename = BASENAME,
   path = NEW_URL,
 }: ReactCmsRouteProps
 ) => <Route path={basename + path} element={<Home setToast={setToast} basename={basename} />} />;
 
 export const getModelRoute = ({
   setToast,
-  basename = "",
+  basename = BASENAME,
   path = MODEL_URL,
 }: ReactCmsRouteProps
 ) => <Route path={basename + path} element={<Model setToast={setToast} basename={basename} />} />;
 
 export const getModelIdRoute = ({
   setToast,
-  basename = "",
+  basename = BASENAME,
   path = MODEL_ID_URL,
 }: ReactCmsRouteProps
 ) => (
@@ -55,7 +56,7 @@ export const getModelIdRoute = ({
 
 export const getEditModelRoute = ({
   setToast,
-  basename = "",
+  basename = BASENAME,
   path = EDIT_MODEL_URL,
 }: ReactCmsRouteProps
 ) => <Route path={basename + path} element={<Edit setToast={setToast} basename={basename} />} />;
@@ -63,14 +64,14 @@ export const getEditModelRoute = ({
 // Entry Routes
 export const getEntryRoute = ({
   setToast,
-  basename = "",
+  basename = BASENAME,
   path = ENTRY_URL,
 }: ReactCmsRouteProps
 ) => <Route path={basename + path} element={<Entry setToast={setToast} basename={basename} />} />;
 
 export const getEentryEditRoute = ({
   setToast,
-  basename = "",
+  basename = BASENAME,
   path = EDIT_ENTRY_URL,
 }: ReactCmsRouteProps
 ) => (
@@ -80,7 +81,7 @@ export const getEentryEditRoute = ({
 // Field Route
 export const getFieldRoute = ({
   setToast,
-  basename = "",
+  basename = BASENAME,
   path = EDIT_FIELD_URL,
 }: ReactCmsRouteProps
 ) => (
