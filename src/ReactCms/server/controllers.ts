@@ -7,7 +7,7 @@ import * as path from "path";
 import * as fs from "fs";
 
 import {
-  Obj,
+  // Obj,
   consoleError,
   getJsonPath,
   readFile,
@@ -15,7 +15,7 @@ import {
   writeFile,
 } from "./helpers.js";
 import { Request, Response } from "express";
-import { Entry, Field, Model } from "../settings/types.js";
+import { Entry, Field, Model, FlatModel } from "../settings/types.js";
 
 /** MODEL CONTROLLERS */
 
@@ -28,7 +28,7 @@ export const getModels = async (req: Request, res: Response) => {
   if (!models) return res.status(404).send("Model Manifest Not Found");
 
   // get the models from the model json files
-  const modelData:Model[] | void = await Promise.all(
+  const modelData:FlatModel[] | void = await Promise.all(
     models.map((model) => readFile(`${jsonPath}/model_${model}.json`))
   ).catch(consoleError);
 
@@ -41,7 +41,7 @@ export const getModel = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
   const { modelId } = req.params;
   // get the model from the model json file
-  const model: Model = await readFile(`${jsonPath}/model_${modelId}.json`).catch(
+  const model: FlatModel = await readFile(`${jsonPath}/model_${modelId}.json`).catch(
     consoleError
   );
   if (!model) return res.status(404).send("Model Not Found");
@@ -63,14 +63,16 @@ export const createModel = async (req: Request, res: Response) => {
   const models: string[] = await readFile(`${jsonPath}/models.json`).catch(consoleError);
   if (!models) return res.status(404).send("Model Manifest Not Found");
 
+  // todo: write fields and entries to files if they exist
+
   // write the model to the model json file
-  const newFile:Model = await writeFile(
+  const newFile:FlatModel = await writeFile(
     `${jsonPath}/model_${model.id}.json`,
     model
   ).catch(consoleError);
   if (!newFile) return res.status(500).send("Error Writing Model");
 
-  const newModel:Model = await readFile(`${jsonPath}/model_${model.id}.json`).catch(
+  const newModel:FlatModel = await readFile(`${jsonPath}/model_${model.id}.json`).catch(
     consoleError
   );
   if (!newModel) return res.status(500).send("Error Writing Model");
@@ -92,26 +94,30 @@ export const updateModel = async (req: Request, res: Response) => {
   const jsonPath = getJsonPath(req);
 
   // get the model from the request body
-  const model:Model = req.body;
+  const model: Model = req.body;
   if (!model) return res.status(400).send("Model Not Provided");
   if (!model.id) return res.status(400).send("Model ID Not Provided");
   if (model.id !== req.params.modelId)
     return res.status(400).send("Model ID Mismatch");
 
   // get the model manifest
-  const models:string[] = await readFile(`${jsonPath}/models.json`).catch(consoleError);
+  const models: string[] = await readFile(`${jsonPath}/models.json`).catch(
+    consoleError
+  );
   if (!models) return res.status(404).send("Model Manifest Not Found");
 
+  // todo: write fields and entries to files if they exist
+
   // write the model to the model json file
-  const newFile:Model = await writeFile(
+  const newFile: Model = await writeFile(
     `${jsonPath}/model_${model.id}.json`,
     model
   ).catch(consoleError);
   if (!newFile) return res.status(500).send("Error Writing Model");
 
-  const newModel:Model = await readFile(`${jsonPath}/model_${model.id}.json`).catch(
-    consoleError
-  );
+  const newModel: Model = await readFile(
+    `${jsonPath}/model_${model.id}.json`
+  ).catch(consoleError);
   if (!newModel) return res.status(500).send("Error Reading New Model");
 
   // send the model
@@ -196,7 +202,7 @@ export const getFieldsByModel = async (req: Request, res: Response) => {
   if (!modelId) return res.status(400).send("Model Not Provided");
 
   // get the model from the model json file
-  const modelData: Model = await readFile(`${jsonPath}/model_${modelId}.json`);
+  const modelData: FlatModel = await readFile(`${jsonPath}/model_${modelId}.json`);
   if (!modelData) return res.status(404).send("Model Not Found");
   if (!modelData.fields) return res.status(404).send("Model Has No Fields");
 
@@ -223,7 +229,7 @@ export const createField = async (req: Request, res: Response) => {
   if (!field.id) field.id = uuid(field.model);
 
   // get the model file
-  const model: Model = await readFile(
+  const model: FlatModel = await readFile(
     `${jsonPath}/model_${field.model}.json`
   ).catch(consoleError);
   if (!model) return res.status(404).send("Model Not Found");
@@ -323,7 +329,7 @@ export const deleteField = async (req: Request, res: Response) => {
   if (!oldField) return res.status(404).send("Field Not Found");
 
   // get the associated model json file
-  const model: Model = await readFile(
+  const model: FlatModel = await readFile(
     `${jsonPath}/model_${oldField.model}.json`
   ).catch(consoleError);
   if (!model) return res.status(404).send("Model Not Found");
@@ -403,7 +409,7 @@ export const getEntriesByModel = async (req: Request, res: Response) => {
   if (!modelId) return res.status(400).send("Model Not Provided");
 
   // get the model from the model json file
-  const model: Model = await readFile(
+  const model: FlatModel = await readFile(
     `${jsonPath}/model_${modelId}.json`
   ).catch(consoleError);
   if (!model) return res.status(404).send("Model Not Found");
@@ -435,7 +441,7 @@ export const createEntry = async (req: Request, res: Response) => {
   if (!entries) return res.status(404).send("Entry Manifest Not Found");
 
   // get the model file
-  const model: Model = await readFile(
+  const model: FlatModel = await readFile(
     `${jsonPath}/model_${entry.model}.json`
   ).catch(consoleError);
   if (!model) return res.status(404).send("Model Not Found");
@@ -525,13 +531,13 @@ export const deleteEntry = async (req: Request, res: Response) => {
   if (!oldEntry) return res.status(404).send("Entry Not Found");
 
   // get the associated model json file
-  const model:Model = await readFile(
+  const model:FlatModel = await readFile(
     `${jsonPath}/model_${oldEntry.model}.json`
   ).catch(consoleError);
   if (!model) return res.status(404).send("Model Not Found");
   model.entries = model.entries.filter((entry) => entry !== entryId);
 
-  const newModel:Model = await writeFile(
+  const newModel:FlatModel = await writeFile(
     `${jsonPath}/model_${model.id}.json`,
     model
   ).catch(consoleError);

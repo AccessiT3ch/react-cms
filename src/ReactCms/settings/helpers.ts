@@ -36,6 +36,7 @@ export const initialFieldState: Field = {
   type: "",
   required: false,
   defaultValue: undefined,
+  model: "",
   ...initialCRUDState,
 };
 

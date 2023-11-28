@@ -105,20 +105,27 @@ export interface ContainerProps {
   export interface EntryState {
     [entryId: string]: Entry;
   }
-  
   // Model Definitions
-  export interface Model extends CrudState {
-    fields: string[];
-    entries: string[];
+  export interface ModelBase extends CrudState {
     deletedFields: string[];
     deletedEntries: string[];
     sort?: string;
     order?: "asc" | "desc";
     labelOption?: "date" | "text" | string;
   }
+  export interface Model extends ModelBase {
+    fields: FieldState;
+    entries: EntryState;
+  }
   
   export interface ModelState {
     [modelId: string]: Model;
+  }
+
+  // Flat Model Definitions
+  export interface FlatModel extends ModelBase {
+    fields: string[];
+    entries: string[];
   }
   
   

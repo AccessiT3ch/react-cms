@@ -107,6 +107,7 @@ test("filter button toggles the filter dropdown on click", async () => {
         "entry1": {
           ...initialCRUDState,
           createdAt: "1",
+          model: "test",
           values: {
             "label": "",
             "field1": "value1",
@@ -116,6 +117,7 @@ test("filter button toggles the filter dropdown on click", async () => {
         },
         "entry2": {
           ...initialCRUDState,
+          model: "test",
           values: {
             "label": "",
             "field1": "value2",
@@ -125,6 +127,7 @@ test("filter button toggles the filter dropdown on click", async () => {
         },
         "entry3": {
           ...initialCRUDState,
+          model: "test",
           values: {
             "label": "",
             "field1": "value3",
