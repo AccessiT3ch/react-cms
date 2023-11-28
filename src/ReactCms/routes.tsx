@@ -7,7 +7,7 @@ import React, { Dispatch } from "react";
 import { ToastType } from "../ReactCms/components/Toaster";
 
 export interface ReactCmsRouteProps {
-  setToast: Dispatch<React.SetStateAction<ToastType>>;
+  setToast?: Dispatch<React.SetStateAction<ToastType>>;
   basename?: string;
   path?: string;
 }
@@ -91,7 +91,7 @@ export const getFieldRoute = ({
 export const getReactCmsRoutes = (props: ReactCmsRouteProps) => {
   const reactCmsRouteProps: ReactCmsRouteProps = {
     setToast: props.setToast,
-    basename: props.basename || "",
+    basename: props.basename || BASENAME,
   };
   return (
     <>

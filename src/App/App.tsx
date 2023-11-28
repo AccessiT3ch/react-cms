@@ -1,6 +1,8 @@
 import React, { FC, ReactElement } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.scss";
+
+// todo: create index.ts file exporting everything from ReactCms
 import { EMPTY, SUCCESS, WILDCARD } from "../ReactCms/settings/strings";
 import { Toaster, ToastType } from "../ReactCms/components/Toaster";
 import { getReactCmsRoutes } from "../ReactCms/routes";
@@ -19,7 +21,7 @@ export const App: FC = (): ReactElement => {
       <BrowserRouter>
         <Routes>
           <Route path={WILDCARD} element={<h1>404</h1>} />
-          {getReactCmsRoutes({ setToast, basename: "/cms" })}
+          {getReactCmsRoutes({ basename: "/cms" })}
         </Routes>
       </BrowserRouter>
       <Toaster toast={toast} setToast={setToast} />
